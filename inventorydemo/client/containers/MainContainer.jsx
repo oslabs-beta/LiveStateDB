@@ -1,7 +1,4 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-
-const mapStateToProps = (state) => ({});
 
 class MainContainer extends Component {
   constructor(props) {

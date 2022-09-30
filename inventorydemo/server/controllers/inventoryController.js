@@ -1,17 +1,17 @@
-const Example = require('../models/exampleModel');
+const Inventory = require('../models/inventoryModel');
 const { createErr } = require('../utils/utils');
 
-const exampleController = {};
+const inventoryController = {};
 
 // Example Mongoose find
-exampleController.getAllExamples = async (req, res, next) => {
+inventoryController.getAllExamples = async (req, res, next) => {
   try {
-    const dbRes = await Example.find({});
+    const dbRes = await Inventory.find({});
     res.locals.examples = dbRes;
   } catch (err) {
     return next(
       createErr({
-        method: 'getAllExamples',
+        method: 'getAllInventory',
         type: 'db query error',
         err,
       })
@@ -22,14 +22,14 @@ exampleController.getAllExamples = async (req, res, next) => {
 };
 
 // Example Mongoose create
-exampleController.createExample = async (req, res, next) => {
-  const required = ['userName', 'exampleTitle', 'exampleText'];
-  const { userName, exampleTitle, exampleText } = req.body;
+inventoryController.createInventoryItem = async (req, res, next) => {
+  const required = ['item', 'quantity'];
+  const { item, quantity } = req.body;
 
   if (required.some((key) => req.body[key] === undefined)) {
     return next(
       createErr({
-        method: 'createExample',
+        method: 'createInventoryItem',
         type: 'data validation error',
         err: 'request body did not include all required fields',
       })
@@ -37,21 +37,20 @@ exampleController.createExample = async (req, res, next) => {
   }
 
   if (
-    typeof userName !== 'string' ||
-    typeof exampleTitle !== 'string' ||
-    typeof exampleText !== 'string'
+    typeof item !== 'string' ||
+    typeof quantity !== 'number'
   ) {
     return next(
       createErr({
-        method: 'createExample',
+        method: 'createInventoryItem',
         type: 'data validation error',
-        err: 'request body did contained invalid data',
+        err: 'request body contained invalid data',
       })
     );
   }
 
   try {
-    const dbRes = await Example.create({ userName, exampleTitle, exampleText });
+    const dbRes = await Inventory.create({ userName, exampleTitle, exampleText });
     res.locals.newExample = dbRes;
   } catch (err) {
     return next(
@@ -66,4 +65,4 @@ exampleController.createExample = async (req, res, next) => {
   return next();
 };
 
-module.exports = exampleController;
+module.exports = inventoryController;

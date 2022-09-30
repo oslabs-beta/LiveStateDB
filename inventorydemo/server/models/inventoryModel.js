@@ -2,14 +2,15 @@ const mongoose = require('mongoose');
 const path = require('path');
 const fs = require('fs');
 
-const MONGO_URI = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../secrets.json'))).MONGO_URI;
+//David's MongoDB
+const MONGO_URI = 'mongodb+srv://test1:test2@testcluster.jzy95ve.mongodb.net/test';
 
 mongoose.connect(MONGO_URI, {
   // options for the connect method to parse the URI
   useNewUrlParser: true,
   useUnifiedTopology: true,
   // sets the name of the DB that our collections are part of
-  dbName: 'starwars'
+  dbName: 'inventoryDemo'
 })
   .then(() => console.log('Connected to Mongo DB.'))
   .catch(err => console.log(err));
@@ -17,16 +18,14 @@ mongoose.connect(MONGO_URI, {
 
 const Schema = mongoose.Schema;
 
-const exampleSchema = new mongoose.Schema({
-  userName: { type: String, required: true, unique: true },
-  exampleTitle: { type: String, required: true },
-  exampleText: { type: String, required: true },
-  upvotes: { type: Number, default: 0 },
-  created: { type: Date, default: Date.now }
+//example inventory tracker using just item name and quantity
+const inventorySchema = new mongoose.Schema({
+  item: { type: String, required: true},
+  quantity: { type: Number, default: 0 },
 });
 
-const Example = mongoose.model('Example', exampleSchema);
+const inventory = mongoose.model('inventoryItem', inventorySchema);
 
 // You must export your model through module.exports
 // The collection name should be 'student'
-module.exports = Example;
+module.exports = inventory;

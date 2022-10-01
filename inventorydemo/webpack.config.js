@@ -31,6 +31,10 @@ module.exports = {
         target: 'http://localhost:3000/',
         secure: false,
       },
+      '/inventory/**': {
+        target: 'http://localhost:3000/',
+        secure: false,
+      }
     },
   },
 
@@ -47,7 +51,7 @@ module.exports = {
         },
       },
       {
-        test: /\.s[ac]ss$/i,
+        test: /\.css$/i,
         use: [
           // Compiles Sass to CSS
           'style-loader',

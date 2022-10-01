@@ -29,6 +29,7 @@
   "homepage": "https://github.com/seadubs/nerm-template#readme",
   "dependencies": {
     "express": "^4.18.1",
+    "mongodb": "^4.10.0",
     "mongoose": "^6.4.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

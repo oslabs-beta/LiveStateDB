@@ -1,0 +1,7 @@
+ul > li {
+  display: inline-block;
+}
+
+li {
+  padding-left: 20px;
+}

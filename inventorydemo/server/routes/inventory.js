@@ -8,15 +8,24 @@ router.use((req, res, next) => {
   next();
 });
 
-
 router.get('/all', inventoryController.getAll, (req, res) => {
   console.log(`server/routes/inventory.js.router.get('/all'): received request ${req.method} ${req.url}`);
   res.status(200).json(res.locals.inventory);
 });
 
+router.get('/getOne/:id', inventoryController.getOne, (req, res) => {
+  console.log(`server/routes/inventory.js.router.get('/getOne'): received request ${req.method} ${req.url}`);
+  res.status(200).json(res.locals.inventory);
+});
+
 router.post('/create', inventoryController.create, (req, res) => {
   console.log(`server/routes/inventory.js.router.post('/create'): received request ${req.method} ${req.url}`);
-  res.status(200).json({message: 'inventory router online'});
+  res.status(200).json({message: 'created a new entry'});
+})
+
+router.patch('/changeSingleField', inventoryController.changeSingleField, (req, res) => {
+  console.log(`server/routes/inventory.js.router.post('/changeSingleField'): received request ${req.method} ${req.url}`);
+  res.status(200).json(res.locals.updatedInventory);
 })
 
 //general handeler if request not found/handled

@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
 const path = require('path');
 const fs = require('fs');
 
-//David's MongoDB
+//Kevin's MongoDB (I did a few things to make Change Stream work -- only works with sharded online URI...local for current dev is fine)
+// const MONGO_URI = 'mongodb+srv://kevin:yZ3BdpdAgYaCsI6K@cluster0.cf7qs2t.mongodb.net/?retryWrites=true&w=majority';
 const MONGO_URI = 'mongodb://localhost:27017';
 
 mongoose.connect(MONGO_URI, {

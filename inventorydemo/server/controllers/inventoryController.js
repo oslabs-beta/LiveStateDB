@@ -4,10 +4,10 @@ const { createErr } = require('../utils/utils');
 const inventoryController = {};
 
 // Example Mongoose find
-inventoryController.getAllExamples = async (req, res, next) => {
+inventoryController.getAll = async (req, res, next) => {
   try {
     const dbRes = await Inventory.find({});
-    res.locals.examples = dbRes;
+    res.locals.inventory = dbRes;
   } catch (err) {
     return next(
       createErr({
@@ -22,9 +22,9 @@ inventoryController.getAllExamples = async (req, res, next) => {
 };
 
 // Example Mongoose create
-inventoryController.createInventoryItem = async (req, res, next) => {
-  const required = ['item', 'quantity'];
-  const { item, quantity } = req.body;
+inventoryController.create = async (req, res, next) => {
+  const required = ['item', 'quantity', 'description', 'price'];
+  const { item, quantity, description, price } = req.body;
 
   if (required.some((key) => req.body[key] === undefined)) {
     return next(
@@ -38,7 +38,9 @@ inventoryController.createInventoryItem = async (req, res, next) => {
 
   if (
     typeof item !== 'string' ||
-    typeof quantity !== 'number'
+    typeof quantity !== 'number' ||
+    typeof price !== 'number' ||
+    typeof description !== 'string'
   ) {
     return next(
       createErr({
@@ -50,7 +52,12 @@ inventoryController.createInventoryItem = async (req, res, next) => {
   }
 
   try {
-    const dbRes = await Inventory.create({ userName, exampleTitle, exampleText });
+    const dbRes = await Inventory.create(
+      { item: item,
+        quantity: quantity,
+        price: price,
+        description: description, 
+      });
     res.locals.newExample = dbRes;
   } catch (err) {
     return next(

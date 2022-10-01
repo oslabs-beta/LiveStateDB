@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 
 //David's MongoDB
-const MONGO_URI = 'mongodb+srv://test1:test2@testcluster.jzy95ve.mongodb.net/test';
+const MONGO_URI = 'mongodb://localhost:27017';
 
 mongoose.connect(MONGO_URI, {
   // options for the connect method to parse the URI
@@ -15,13 +15,14 @@ mongoose.connect(MONGO_URI, {
   .then(() => console.log('Connected to Mongo DB.'))
   .catch(err => console.log(err));
 
-
 const Schema = mongoose.Schema;
 
-//example inventory tracker using just item name and quantity
+// inventory tracker using just item name and quantity
 const inventorySchema = new mongoose.Schema({
   item: { type: String, required: true},
   quantity: { type: Number, default: 0 },
+  description: { type: String, require: true},
+  price: { type: Number, required: true}
 });
 
 const inventory = mongoose.model('inventoryItem', inventorySchema);

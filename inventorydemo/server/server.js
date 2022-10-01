@@ -1,12 +1,12 @@
 const express = require('express');
 const path = require('path');
 const api = require('./routes/api');
+const inventory = require('./routes/inventory');
 
 const PORT = process.env.EXPRESS_PORT || 3000;
 const app = express();
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 // Log all rquests as we build
 app.use((req, res, next) => {
@@ -17,8 +17,9 @@ app.use((req, res, next) => {
 // Serve the client build
 app.use('/build', express.static(path.resolve(__dirname, '../build')));
 
-// Handle API calls via api router
+// Handle router calls
 app.use('/api', api);
+app.use('/inventory', inventory);
 
 // Serve index.html
 app.get('/', (req, res) => {

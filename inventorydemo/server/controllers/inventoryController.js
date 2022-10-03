@@ -72,7 +72,7 @@ inventoryController.create = async (req, res, next) => {
   return next();
 };
 
-//changes a single field in the db
+//changes a single field in the db only works for incrementing and decrementing
 inventoryController.changeSingleField = async (req, res, next) => {
   const required = ['id', 'field', 'value'];
   const { id, field, value } = req.body;

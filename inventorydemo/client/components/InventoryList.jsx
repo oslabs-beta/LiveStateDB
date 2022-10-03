@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import Item from './Item.jsx'
 
 
-const InventoryList = ({ inventoryList, handleIncremementClick, handleDecrementClick }) => {
+const InventoryList = ({ inventoryList, handleIncDecClick }) => {
 
   const inventory = [];
   let i = 0;
@@ -16,8 +16,7 @@ const InventoryList = ({ inventoryList, handleIncremementClick, handleDecrementC
       description = { inventoryList[items].description } 
       quantity = { inventoryList[items].quantity }
       price = { inventoryList[items].price}
-      handleIncremementClick = { handleIncremementClick }
-      handleDecrementClick = { handleDecrementClick }     
+      handleIncDecClick = { handleIncDecClick }    
       />
     )
     i++;

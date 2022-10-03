@@ -5,8 +5,7 @@ const Item = (
     description, 
     quantity, 
     price, 
-    handleIncremementClick,
-    handleDecrementClick,
+    handleIncDecClick,
     id 
   }) => {
   
@@ -25,12 +24,12 @@ const Item = (
         {price}
       </li>
       <li>
-        <button onClick={() => handleIncremementClick(id, 'quantity', 1)}>
+        <button onClick={() => handleIncDecClick(id, 'quantity', 1)}>
           Increment
         </button>
       </li>
       <li>
-        <button onClick={() => handleDecrementClick(id, 'quantity', -1)}>
+        <button onClick={() => handleIncDecClick(id, 'quantity', -1)}>
           Decrement
         </button>
       </li>

@@ -9,6 +9,7 @@ async function main() {
         // Connect to the MongoDB cluster
         await client.connect();
 
+        //call change stream monitor function
         await monitorListingsUsingEventEmitter(client);
 
     } finally {
@@ -26,6 +27,7 @@ async function monitorListingsUsingEventEmitter(client, timeInMs = 60000, pipeli
   //this will listen to events for db = 'inventoryDemo' and collection = 'inventoryitems' 
   const collection = client.db("inventoryDemo").collection("inventoryitems");
   const changeStream = collection.watch(pipeline);
+  //listen for changes
   changeStream.on('change', (next) => {
     console.log(next);
   });

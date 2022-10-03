@@ -11,13 +11,13 @@ module.exports = inventoryFunctions = {
       .then(data => data.json())
   },
 
-  createInventory: (item, quantitiy, description, price) => {
+  createInventory: (item, quantity, description, price) => {
     return fetch('/inventory/create', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         item: item,
-        quantitiy: quantitiy,
+        quantity: quantity,
         description: description,
         price: price,
       })

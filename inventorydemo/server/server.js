@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const api = require('./routes/api');
 const inventory = require('./routes/inventory');
+const event = require('./routes/event')
 
 const PORT = process.env.EXPRESS_PORT || 3000;
 const app = express();
@@ -20,6 +21,10 @@ app.use('/build', express.static(path.resolve(__dirname, '../build')));
 // Handle router calls
 app.use('/api', api);
 app.use('/inventory', inventory);
+
+//Server Side Event Handler Test
+app.use('/event', event);
+
 
 // Serve index.html
 app.get('/', (req, res) => {

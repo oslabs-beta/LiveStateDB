@@ -8,6 +8,10 @@ const Display = () => {
 
   //useEffect is called once to get initial data from DB - empty array brackets as 2nd param enables useEffect to only be called once
   useEffect(() => {
+    //create a SSE listener
+    const source = new EventSource('/event/?id=user1');
+    source.onmessage = e => console.log(JSON.parse(e.data));
+    
     getAllInventory()
       .then((data) => {
         //the result from getAllInventory is an array, it needs to be converted to an object before setting state
@@ -18,6 +22,7 @@ const Display = () => {
         }
         setInventoryList(obj);
       })
+
   }, [])
 
   //increment/decrement click function

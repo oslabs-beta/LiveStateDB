@@ -24,7 +24,7 @@ module.exports = {
     static: {
       directory: path.resolve(__dirname, './public/'),
     },
-    compress: true,
+    compress: false,
     port: 8080,
     proxy: {
       '/api/**': {
@@ -34,7 +34,12 @@ module.exports = {
       '/inventory/**': {
         target: 'http://localhost:3000/',
         secure: false,
-      }
+      }, 
+      '/event/**': {
+        target: 'http://localhost:3000/',
+        secure: false,
+        ws: true,
+      }, 
     },
   },
 

@@ -2,7 +2,12 @@ import React, { useState, useEffect } from "react"
 import Item from './Item.jsx'
 
 
-const InventoryList = ({ inventoryList, handleIncDecClick }) => {
+const InventoryList = ({ inventoryList, handleIncDecClick, userId, setUserId }) => {
+
+  const handleUserSubmit = (e) => {
+    e.preventDefault();
+    setUserId(e.target.user.value);
+  }
 
   const inventory = [];
   let i = 0;
@@ -24,9 +29,13 @@ const InventoryList = ({ inventoryList, handleIncDecClick }) => {
 
   return (
     <div>
+      <form onSubmit= { e => handleUserSubmit(e) }>
+        <input type='text' placeholder='user name' name='user'></input>
+        <button type='submit'>save</button>
+      </form>
+      <p>{ userId }</p>
       { inventory }
     </div>
-
 );
 }
 

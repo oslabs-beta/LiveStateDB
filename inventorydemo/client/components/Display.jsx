@@ -2,27 +2,38 @@ import React, { useState, useEffect, useId } from "react"
 import InventoryList from './InventoryList.jsx'
 import { getAllInventory } from '../services/inventory'
 import { handleDecrementClickHelper, handleIncremementClickHelper } from '../services/events'
+import uuid from 'react-uuid';
 
 const Display = () => {
   const clientId = useId();
   
   const [ inventoryList, setInventoryList ] = useState({});
+  const [ userId, setUserId ] = useState(uuid());
   
+
+  useEffect(() => {
+    //adding list of params to query
+    //   const params = {
+    //     type: 'public',
+    //     app_id: APP_ID,
+    //     app_key: APP_KEY,
+    //     q: id,
+    // }
+    // fetch(URL + new URLSearchParams(params))
+    // const source = new EventSource(`/event/?id=${userId}`);
+
+    //return object from message 
+    // { type: (get, update, insert, delete)
+    //   data: if get --> normal query response 
+    //         else --> change stream
+    // }
+    const source = new EventSource(`/event/?id=${userId}&db=inventoryDemo&collection=inventoryitems&query={}`);
+    source.onmessage = e => console.log(JSON.parse(e.data));
+
+  }, [userId])
 
   //useEffect is called once to get initial data from DB - empty array brackets as 2nd param enables useEffect to only be called once
   useEffect(() => {
-    // //create a SSE listener
-    // const source = new EventSource(`/event/?id=${clientId}`);
-    // // source.onmessage = e => console.log(JSON.parse(e.data)); // -> original function that logs parsed incoming JSON data but doesn't do anything with it
-    // //! Add logic here
-    // //! This is what returns when someone else modifies a document you're subscribed to
-    // source.onmessage = e => {
-    //   const parsedMessage = JSON.parse(e.data);
-    //   const changedDocId = parsedMessage.documentKey._id;
-    //   console.log(inventoryList.changedDocId);
-    // }
-
-    
     getAllInventory()
       .then((data) => {
         //the result from getAllInventory is an array, it needs to be converted to an object before setting state
@@ -33,17 +44,6 @@ const Display = () => {
         }
         setInventoryList(obj);
       })
-      //create a SSE listener
-    const source = new EventSource(`/event/?id=${clientId}`);
-    // source.onmessage = e => console.log(JSON.parse(e.data)); // -> original function that logs parsed incoming JSON data but doesn't do anything with it
-    //! Add logic here
-    //! This is what returns when someone else modifies a document you're subscribed to
-    source.onmessage = e => {
-      const parsedMessage = JSON.parse(e.data);
-      const changedDocId = parsedMessage.documentKey._id;
-      console.log(inventoryList.changedDocId);
-    }
-
   }, [])
 
   //increment/decrement click function
@@ -69,9 +69,11 @@ const Display = () => {
   // }
 
   return (
-    <InventoryList 
+    <InventoryList
+    userId = { userId } 
     inventoryList = { inventoryList }
     handleIncDecClick = { handleIncDecClick }
+    setUserId = { setUserId }
     />
 );
 }

@@ -1,16 +1,27 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useId } from "react"
 import InventoryList from './InventoryList.jsx'
 import { getAllInventory } from '../services/inventory'
 import { handleDecrementClickHelper, handleIncremementClickHelper } from '../services/events'
 
 const Display = () => {
+  const clientId = useId();
+  
   const [ inventoryList, setInventoryList ] = useState({});
+  
 
   //useEffect is called once to get initial data from DB - empty array brackets as 2nd param enables useEffect to only be called once
   useEffect(() => {
-    //create a SSE listener
-    const source = new EventSource('/event/?id=user1');
-    source.onmessage = e => console.log(JSON.parse(e.data));
+    // //create a SSE listener
+    // const source = new EventSource(`/event/?id=${clientId}`);
+    // // source.onmessage = e => console.log(JSON.parse(e.data)); // -> original function that logs parsed incoming JSON data but doesn't do anything with it
+    // //! Add logic here
+    // //! This is what returns when someone else modifies a document you're subscribed to
+    // source.onmessage = e => {
+    //   const parsedMessage = JSON.parse(e.data);
+    //   const changedDocId = parsedMessage.documentKey._id;
+    //   console.log(inventoryList.changedDocId);
+    // }
+
     
     getAllInventory()
       .then((data) => {
@@ -22,6 +33,16 @@ const Display = () => {
         }
         setInventoryList(obj);
       })
+      //create a SSE listener
+    const source = new EventSource(`/event/?id=${clientId}`);
+    // source.onmessage = e => console.log(JSON.parse(e.data)); // -> original function that logs parsed incoming JSON data but doesn't do anything with it
+    //! Add logic here
+    //! This is what returns when someone else modifies a document you're subscribed to
+    source.onmessage = e => {
+      const parsedMessage = JSON.parse(e.data);
+      const changedDocId = parsedMessage.documentKey._id;
+      console.log(inventoryList.changedDocId);
+    }
 
   }, [])
 

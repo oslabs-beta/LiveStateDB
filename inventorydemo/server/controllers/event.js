@@ -1,27 +1,14 @@
 const { createErr } = require('../utils/utils');
 const db = require('../fakeRedis/fakeRedis')
+const client = require('./dbConnection');
 
-const eventController = {};
-const currentChangeStreams = {};
-const clients = {};
+const subscriptionDb = JSON.parse(db)
+subscriptionDb.user1.docs = new Set(subscriptionDb.user1.docs)
+
+eventController = {};
 
 eventController.connection = async (req, res, next) => {
-  const { id, collection, database, query } = req.query;
 
-    // console.log(id);
-  console.log(req.query);
-
-
-  //!!!add logic for checking if client data is already part of change stream
-  //!!!if it is we do not open a new connection
-  // if(!currentChangeStreams[database][collection]){
-  //   connectToDb(res, true).catch(console.error);
-  //   currentChangeStreams[database][collection] = true;
-  // }
-  //check database for subscribed documents
-
-  connectToDb(res, true).catch(console.error);
-  
   res.set({
     'Cache-Control': 'no-cache',
     'Content-Type': 'text/event-stream',
@@ -31,41 +18,39 @@ eventController.connection = async (req, res, next) => {
 
   //tells client to retry every 10 seconds if connection is lost
   res.write('retry: 10000\n\n')
-  let count = 0;
 
-  //!!!write logic for retrieving intial state data and writing it to the response
+  const { id, collection, database, query } = req.query;
+
+  const dbCollection = client.db(database).collection(collection);
+  //find documents that are querried
+  dbCollection.find(JSON.parse(query)).toArray()
+    .then((data) => res.write(`data: ${JSON.stringify({type: 'get', data: data})}\n\n`))
+  //!! add documents to database if no entry with user as value
+  //!! if there is an entry append the user to the set of values
+
+
+  //!!check if there is already a changestream for
+  await monitorListingsUsingEventEmitter(dbCollection, res, subscriptionDb);
+  
+
+
   // res.write({type: 'initialState', ...result form db query})
 
 }
 
-const { MongoClient } = require('mongodb');
 
-async function connectToDb(res, newConnection = false) {
-
-    const uri = "mongodb+srv://kevin:yZ3BdpdAgYaCsI6K@cluster0.cf7qs2t.mongodb.net/?retryWrites=true&w=majority";
-    const client = new MongoClient(uri);
-
-    try {
-        // Connect to the MongoDB cluster
-        if(newConnection) await client.connect();
-
-        //call change stream monitor function
-        await monitorListingsUsingEventEmitter(client, res);
-
-    } finally {
-        // Close the connection to the MongoDB cluster
-        await client.close();
-    }
-}
-
-async function monitorListingsUsingEventEmitter(client, res, timeInMs = 600000, pipeline = []){
-  //this will listen to events for db = 'inventoryDemo' and collection = 'inventoryitems' 
-  const collection = client.db("inventoryDemo").collection("inventoryitems");
-  const changeStream = collection.watch(pipeline);
+//!! make sure this is only called once for each collection
+async function monitorListingsUsingEventEmitter(client, res, subscriptionDb, timeInMs = 600000, pipeline = []){
+  const changeStream = client.watch(pipeline);
   //listen for changes
+  console.log('change stream is on');
   changeStream.on('change', (next) => {
-    res.write(`data: ${JSON.stringify(next)}\n\n`)
-    console.log(next);
+    //!! check to see who is subscribed to the document that is being changed
+    //!! get the res objects for all subscribers
+    //!! iterate over all res objects writing the change stream
+    if(subscriptionDb.user1.docs.has(next.documentKey._id.toString())){
+      res.write(`data: ${JSON.stringify(next)}\n\n`)
+    }
   });
   await closeChangeStream(timeInMs, changeStream);
 }
@@ -80,6 +65,7 @@ function closeChangeStream(timeInMs, changeStream) {
       }, timeInMs)
   })
 };
+
 
 
 module.exports = eventController;

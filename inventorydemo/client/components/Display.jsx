@@ -24,7 +24,7 @@ const Display = () => {
     //   data: if get --> normal query response 
     //         else --> change stream
     // }
-    const source = new EventSource(`/event/?id=${userId}&db=inventoryDemo&collection=inventoryitems&query={}`);
+    const source = new EventSource(`/event/?id=${userId}&database=inventoryDemo&collection=inventoryitems&query={}`);
     source.onmessage = e => console.log(JSON.parse(e.data));
 
   }, [userId])

@@ -13,7 +13,7 @@ mongoose.connect(MONGO_URI, {
   // sets the name of the DB that our collections are part of
   dbName: 'inventoryDemo'
 })
-  .then(() => console.log('Connected to Mongo DB.'))
+  .then(() => console.log('Mongoose connected to Mongo DB.'))
   .catch(err => console.log(err));
 
 const Schema = mongoose.Schema;

@@ -76,9 +76,6 @@ inventoryController.create = async (req, res, next) => {
 inventoryController.changeSingleField = async (req, res, next) => {
   const required = ['id', 'field', 'value'];
   const { id, field, value } = req.body;
-  console.log('type of id', typeof id);
-  console.log('type of field', typeof field);
-  console.log('type of value', typeof value);
 
   if (required.some((key) => req.body[key] === undefined)) {
     return next(
@@ -131,7 +128,6 @@ inventoryController.getOne = async (req, res, next) => {
   const { id } = req.params;
   try {
     const dbRes = await Inventory.find({ _id: id});
-    console.log(dbRes);
     res.locals.inventory = dbRes;
   } catch (err) {
     return next(

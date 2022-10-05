@@ -8,12 +8,9 @@ router.use((req, res, next) => {
   next();
 });
 
-
-
 router.get('/', eventController.connection, (req, res) => {
   console.log(`server/routes/event.js.router.get('/'): received request ${req.method} ${req.url}`);
 });
-
 
 //general handeler if request not found/handled
 router.use((req, res) => {

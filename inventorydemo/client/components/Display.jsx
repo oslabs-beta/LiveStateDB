@@ -7,6 +7,7 @@ import uuid from 'react-uuid';
 const Display = () => {
   const [ inventoryList, setInventoryList ] = useState({});
   const [ userId, setUserId ] = useState(uuid());
+  
 
   useEffect(() => {
     //adding list of params to query
@@ -24,8 +25,18 @@ const Display = () => {
     //   data: if get --> normal query response 
     //         else --> change stream
     // }
-    const source = new EventSource(`/event/?id=${userId}&database=inventoryDemo&collection=inventoryitems&query={}`);
-    source.onmessage = e => console.log(JSON.parse(e.data));
+    const source = new EventSource(`/event/?id=${userId}&db=inventoryDemo&collection=inventoryitems&query={}`);
+    source.onmessage = e => {
+      console.log(JSON.parse(e.data));
+      const parsedMessage = JSON.parse(e.data);
+      // const updatedInventoryList = JSON.parse(JSON.stringify(InventoryList));
+      setInventoryList((previousInventoryList) => 
+      {
+        const updatedInventoryList = JSON.parse(JSON.stringify(previousInventoryList));
+        updatedInventoryList[parsedMessage.documentKey._id].quantity = parsedMessage.updateDescription.updatedFields.quantity;
+        return updatedInventoryList;
+      });
+    }
 
   }, [userId])
 
@@ -50,7 +61,7 @@ const Display = () => {
         //update the state, must copy object so React updates state
         const obj = JSON.parse(JSON.stringify(inventoryList));
         obj[data[0]._id] = data[0];
-        setInventoryList(obj);
+        // setInventoryList(obj);
     })
   }
 

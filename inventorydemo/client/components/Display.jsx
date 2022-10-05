@@ -1,17 +1,36 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useId } from "react"
 import InventoryList from './InventoryList.jsx'
 import { getAllInventory } from '../services/inventory'
 import { handleDecrementClickHelper, handleIncremementClickHelper } from '../services/events'
+import uuid from 'react-uuid';
 
 const Display = () => {
   const [ inventoryList, setInventoryList ] = useState({});
+  const [ userId, setUserId ] = useState(uuid());
+
+  useEffect(() => {
+    //adding list of params to query
+    //   const params = {
+    //     type: 'public',
+    //     app_id: APP_ID,
+    //     app_key: APP_KEY,
+    //     q: id,
+    // }
+    // fetch(URL + new URLSearchParams(params))
+    // const source = new EventSource(`/event/?id=${userId}`);
+
+    //return object from message 
+    // { type: (get, update, insert, delete)
+    //   data: if get --> normal query response 
+    //         else --> change stream
+    // }
+    const source = new EventSource(`/event/?id=${userId}&db=inventoryDemo&collection=inventoryitems&query={}`);
+    source.onmessage = e => console.log(JSON.parse(e.data));
+
+  }, [userId])
 
   //useEffect is called once to get initial data from DB - empty array brackets as 2nd param enables useEffect to only be called once
   useEffect(() => {
-    //create a SSE listener
-    const source = new EventSource('/event/?id=user1');
-    source.onmessage = e => console.log(JSON.parse(e.data));
-    
     getAllInventory()
       .then((data) => {
         //the result from getAllInventory is an array, it needs to be converted to an object before setting state
@@ -22,7 +41,6 @@ const Display = () => {
         }
         setInventoryList(obj);
       })
-
   }, [])
 
   //increment/decrement click function
@@ -48,9 +66,11 @@ const Display = () => {
   // }
 
   return (
-    <InventoryList 
+    <InventoryList
+    userId = { userId } 
     inventoryList = { inventoryList }
     handleIncDecClick = { handleIncDecClick }
+    setUserId = { setUserId }
     />
 );
 }

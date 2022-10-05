@@ -42,7 +42,7 @@ module.exports = {
       }, 
     },
   },
-
+  
   module: {
     rules: [
       {

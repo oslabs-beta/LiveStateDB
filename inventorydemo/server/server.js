@@ -3,6 +3,9 @@ const path = require('path');
 const api = require('./routes/api');
 const inventory = require('./routes/inventory');
 const event = require('./routes/event')
+const spdy = require ('spdy');
+const fs = require("fs");
+const http2 = require('http2');
 
 const PORT = process.env.EXPRESS_PORT || 3000;
 const app = express();
@@ -53,7 +56,20 @@ app.use((err, req, res, next) => {
   res.status(errObj.status).send(errObj.message);
 });
 
+const options = {
+  key: fs.readFileSync(path.resolve(__dirname, './keys/server.key')),
+  cert: fs.readFileSync(path.resolve(__dirname, './keys/server.crt')),
+}
+
+spdy.createServer(options, 
+  app).listen(3000, (err) => {
+  if(err){
+    console.log('failed to start server')
+  }
+  console.log('Listening on port 3000')
+})
+
 // Fire it up
-app.listen(PORT, () => {
-  console.log(`Express Node server listening on ${PORT}`);
-});
+// app.listen(PORT, () => {
+//   console.log(`Express Node server listening on ${PORT}`);
+// });

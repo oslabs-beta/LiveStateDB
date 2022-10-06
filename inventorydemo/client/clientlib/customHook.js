@@ -1,5 +1,5 @@
 const [ inventoryList, setInventoryList ] = useState({});
-  const [ userId, setUserId ] = useState(uuid());
+const [ userId, setUserId ] = useState(uuid());
   
 
   useEffect(() => {
@@ -18,17 +18,44 @@ const [ inventoryList, setInventoryList ] = useState({});
     //   data: if get --> normal query response 
     //         else --> change stream
     // }
-    const source = new EventSource(`/event/?id=${userId}&db=inventoryDemo&collection=inventoryitems&query={}`);
+    const source = new EventSource(`/event/?id=${userId}&database=inventoryDemo&collection=inventoryitems&query={}`);
     source.onmessage = e => {
-      console.log(JSON.parse(e.data));
-      const parsedMessage = JSON.parse(e.data);
+      const {type, data} = JSON.parse(e.data);
+      switch (type) {
+        case 'get':
+          {
+            const obj = {};
+            for(let i = 0; i < data.length; i++){
+              obj[data[i]._id] = data[i];
+              // delete obj[data[i]._id]._id; 
+            }
+            setInventoryList(obj);
+            break;
+          }
+        case 'insert' :
+          {
+            break;
+          }
+        case 'update' :
+          {
+            const update = data.updateDescription.updatedFields;
+            const id = data.documentKey._id;
+            setInventoryList((previousInventoryList) => 
+            {
+              const updatedInventoryList = JSON.parse(JSON.stringify(previousInventoryList));
+              Object.assign(updatedInventoryList[id], update);
+              return updatedInventoryList;
+            });
+            break;
+          }
+        case 'delete' :
+          {
+            break;
+          }
+      }
+
       // const updatedInventoryList = JSON.parse(JSON.stringify(InventoryList));
-      setInventoryList((previousInventoryList) => 
-      {
-        const updatedInventoryList = JSON.parse(JSON.stringify(previousInventoryList));
-        updatedInventoryList[parsedMessage.documentKey._id].quantity = parsedMessage.updateDescription.updatedFields.quantity;
-        return updatedInventoryList;
-      });
+
     }
 
   }, [userId])

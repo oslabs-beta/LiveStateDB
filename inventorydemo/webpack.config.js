@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const fs = require('fs');
 
 console.log('NODE_ENV: ', process.env.NODE_ENV)
 
@@ -24,6 +25,13 @@ module.exports = {
     static: {
       directory: path.resolve(__dirname, './public/'),
     },
+    server: {
+      type: 'spdy',
+      options: {
+        key: fs.readFileSync(path.resolve(__dirname, './server/keys/server.key')),
+        cert: fs.readFileSync(path.resolve(__dirname, './server/keys/server.crt'))
+      }
+    },
     compress: false,
     port: 8080,
     proxy: {
@@ -32,11 +40,11 @@ module.exports = {
         secure: false,
       },
       '/inventory/**': {
-        target: 'http://localhost:3000/',
+        target: 'https://localhost:3000/',
         secure: false,
       }, 
       '/event/**': {
-        target: 'http://localhost:3000/',
+        target: 'https://localhost:3000/',
         secure: false,
         ws: true,
       }, 

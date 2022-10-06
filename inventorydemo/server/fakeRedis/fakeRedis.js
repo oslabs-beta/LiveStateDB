@@ -1,3 +1,4 @@
+//ignore database 1 for REDIS
 const database =
 {
   user1: {docs: ['6338734d9a5d5e69f3af9ef8', '6338735b9a5d5e69f3af9efa']},

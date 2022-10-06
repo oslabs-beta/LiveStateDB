@@ -25,34 +25,61 @@ const Display = () => {
     //   data: if get --> normal query response 
     //         else --> change stream
     // }
-    const source = new EventSource(`/event/?id=${userId}&db=inventoryDemo&collection=inventoryitems&query={}`);
+    const source = new EventSource(`/event/?id=${userId}&database=inventoryDemo&collection=inventoryitems&query={}`);
     source.onmessage = e => {
-      console.log(JSON.parse(e.data));
-      const parsedMessage = JSON.parse(e.data);
+      const {type, data} = JSON.parse(e.data);
+      switch (type) {
+        case 'get':
+          {
+            const obj = {};
+            for(let i = 0; i < data.length; i++){
+              obj[data[i]._id] = data[i];
+              // delete obj[data[i]._id]._id; 
+            }
+            setInventoryList(obj);
+            break;
+          }
+        case 'insert' :
+          {
+            break;
+          }
+        case 'update' :
+          {
+            const update = data.updateDescription.updatedFields;
+            const id = data.documentKey._id;
+            setInventoryList((previousInventoryList) => 
+            {
+              const updatedInventoryList = JSON.parse(JSON.stringify(previousInventoryList));
+              Object.assign(updatedInventoryList[id], update);
+              return updatedInventoryList;
+            });
+            break;
+          }
+        case 'delete' :
+          {
+            break;
+          }
+      }
+
       // const updatedInventoryList = JSON.parse(JSON.stringify(InventoryList));
-      setInventoryList((previousInventoryList) => 
-      {
-        const updatedInventoryList = JSON.parse(JSON.stringify(previousInventoryList));
-        updatedInventoryList[parsedMessage.documentKey._id].quantity = parsedMessage.updateDescription.updatedFields.quantity;
-        return updatedInventoryList;
-      });
+
     }
 
   }, [userId])
 
   //useEffect is called once to get initial data from DB - empty array brackets as 2nd param enables useEffect to only be called once
-  useEffect(() => {
-    getAllInventory()
-      .then((data) => {
-        //the result from getAllInventory is an array, it needs to be converted to an object before setting state
-        const obj = {};
-        for(let i = 0; i < data.length; i++){
-          obj[data[i]._id] = data[i];
-          // delete obj[data[i]._id]._id; 
-        }
-        setInventoryList(obj);
-      })
-  }, [])
+  // useEffect(() => {
+  //   getAllInventory()
+  //     .then((data) => {
+  //       //the result from getAllInventory is an array, it needs to be converted to an object before setting state
+  //       const obj = {};
+  //       for(let i = 0; i < data.length; i++){
+  //         obj[data[i]._id] = data[i];
+  //         // delete obj[data[i]._id]._id; 
+  //       }
+  //       setInventoryList(obj);
+  //     })
+  // }, [])
 
   //increment/decrement click function
   const handleIncDecClick = (id, field, value) => {

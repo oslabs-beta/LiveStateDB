@@ -48,8 +48,11 @@ async function monitorListingsUsingEventEmitter(client, res, subscriptionDb, tim
     //!! check to see who is subscribed to the document that is being changed
     //!! get the res objects for all subscribers
     //!! iterate over all res objects writing the change stream
+    console.log(subscriptionDb.user1.docs)
+    console.log(next.documentKey._id.toString())
+    console.log(next);
     if(subscriptionDb.user1.docs.has(next.documentKey._id.toString())){
-      res.write(`data: ${JSON.stringify(next)}\n\n`)
+      res.write(`data: ${JSON.stringify({type: next.operationType, data: next})}\n\n`)
     }
   });
   await closeChangeStream(timeInMs, changeStream);

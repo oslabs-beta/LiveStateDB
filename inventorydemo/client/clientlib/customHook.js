@@ -1,7 +1,10 @@
-const [ inventoryList, setInventoryList ] = useState({});
-const [ userId, setUserId ] = useState(uuid());
-  
+import React, { useState, useEffect, useMemo } from 'react';
+import uuid from 'react-uuid';
 
+const useSubscribe = (database, collection, query) => {
+  const [inventoryList, setInventoryList] = useState({});
+  const clientId = useMemo(() => uuid(), []);
+  
   useEffect(() => {
     //adding list of params to query
     //   const params = {
@@ -18,7 +21,10 @@ const [ userId, setUserId ] = useState(uuid());
     //   data: if get --> normal query response 
     //         else --> change stream
     // }
-    const source = new EventSource(`/event/?id=${userId}&database=inventoryDemo&collection=inventoryitems&query={}`);
+    const source = new EventSource(
+      `/event/?id=${clientId}&database=${database}&collection=${collection}&query=${query}`
+    );
+
     source.onmessage = e => {
       const {type, data} = JSON.parse(e.data);
       switch (type) {
@@ -38,6 +44,7 @@ const [ userId, setUserId ] = useState(uuid());
           }
         case 'update' :
           {
+            console.log(data);
             const update = data.updateDescription.updatedFields;
             const id = data.documentKey._id;
             setInventoryList((previousInventoryList) => 
@@ -58,4 +65,12 @@ const [ userId, setUserId ] = useState(uuid());
 
     }
 
-  }, [userId])
+    return () => {
+      // Unsubscribe from event stream
+    }
+  }, [clientId, database, collection, query]);
+
+  return {inventoryList, clientId};
+}
+
+export default useSubscribe;

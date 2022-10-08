@@ -8,7 +8,8 @@
     "start": "nodemon server/server.js & NODE_ENV=development webpack serve --open",
     "build": "NODE_ENV=production webpack",
     "watch": "webpack --watch",
-    "dev": "NODE_ENV=development webpack serve --open"
+    "dev": "NODE_ENV=development webpack serve --open",
+    "fastify": "nodemon server/server2.js & NODE_ENV=development webpack serve --open"
   },
   "nodemonConfig": {
     "ignore": [
@@ -29,6 +30,8 @@
   "homepage": "https://github.com/seadubs/nerm-template#readme",
   "dependencies": {
     "express": "^4.18.1",
+    "fastify-sse": "^1.0.0",
+    "fastify-sse-v2": "^2.2.1",
     "mongodb": "^4.10.0",
     "mongoose": "^6.4.7",
     "react": "^18.2.0",
@@ -40,6 +43,7 @@
     "@babel/core": "^7.18.9",
     "@babel/preset-env": "^7.18.9",
     "@babel/preset-react": "^7.18.6",
+    "@fastify/redis": "^6.0.1",
     "babel-loader": "^8.2.5",
     "css-loader": "^6.7.1",
     "html-webpack-plugin": "^5.5.0",

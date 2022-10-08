@@ -25,7 +25,8 @@ const Display = () => {
     //   data: if get --> normal query response 
     //         else --> change stream
     // }
-    const source = new EventSource(`/event/?id=${userId}&database=inventoryDemo&collection=inventoryitems&query={}`);
+
+    const source = new EventSource(`https://localhost:3001/event/?id=${userId}&database=inventoryDemo&collection=inventoryitems&query={}`);
     source.onmessage = e => {
       const {type, data} = JSON.parse(e.data);
       switch (type) {

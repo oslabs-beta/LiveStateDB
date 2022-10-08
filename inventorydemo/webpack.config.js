@@ -25,13 +25,13 @@ module.exports = {
     static: {
       directory: path.resolve(__dirname, './public/'),
     },
-    server: {
-      type: 'spdy',
-      options: {
-        key: fs.readFileSync(path.resolve(__dirname, './server/keys/server.key')),
-        cert: fs.readFileSync(path.resolve(__dirname, './server/keys/server.crt'))
-      }
-    },
+    // server: {
+    //   type: 'https',
+    //   options: {
+    //     key: fs.readFileSync(path.resolve(__dirname, './server/keys/server.key')),
+    //     cert: fs.readFileSync(path.resolve(__dirname, './server/keys/server.crt'))
+    //   }
+    // },
     compress: false,
     port: 8080,
     proxy: {
@@ -40,12 +40,12 @@ module.exports = {
         secure: false,
       },
       '/inventory/**': {
-        target: 'https://localhost:3000/',
+        target: 'http://localhost:3000/',
         secure: false,
       }, 
       '/event/**': {
         target: 'https://localhost:3000/',
-        secure: false,
+        secure: true,
         ws: true,
       }, 
     },

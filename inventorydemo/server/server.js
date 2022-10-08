@@ -26,7 +26,7 @@ app.use('/api', api);
 app.use('/inventory', inventory);
 
 //Server Side Event Handler Test
-app.use('/event', event);
+// app.use('/event', event);
 
 
 // Serve index.html
@@ -56,20 +56,9 @@ app.use((err, req, res, next) => {
   res.status(errObj.status).send(errObj.message);
 });
 
-const options = {
-  key: fs.readFileSync(path.resolve(__dirname, './keys/server.key')),
-  cert: fs.readFileSync(path.resolve(__dirname, './keys/server.crt')),
-}
 
-spdy.createServer(options, 
-  app).listen(3000, (err) => {
-  if(err){
-    console.log('failed to start server')
-  }
-  console.log('Listening on port 3000')
-})
 
 // Fire it up
-// app.listen(PORT, () => {
-//   console.log(`Express Node server listening on ${PORT}`);
-// });
+app.listen(PORT, () => {
+  console.log(`Express Node server listening on ${PORT}`);
+});

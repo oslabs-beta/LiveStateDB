@@ -4,7 +4,11 @@ import Display from './components/Display.jsx'
 const App = () => {
 
   return (
-    <Display />
+    <Display 
+      databse="inventoryDemo" 
+      collection="inventoryitems" 
+      query="{}"
+    />
   );
 };
 

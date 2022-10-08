@@ -1,7 +1,10 @@
-const [ inventoryList, setInventoryList ] = useState({});
-  const [ userId, setUserId ] = useState(uuid());
-  
+import React, { useState, useEffect, useMemo } from 'react';
+import uuid from 'react-uuid';
 
+const useSubscribe = (database, collection, query) => {
+  const [inventoryList, setInventoryList] = useState({});
+  const clientId = useMemo(() => uuid(), []);
+  
   useEffect(() => {
     //adding list of params to query
     //   const params = {
@@ -18,17 +21,56 @@ const [ inventoryList, setInventoryList ] = useState({});
     //   data: if get --> normal query response 
     //         else --> change stream
     // }
-    const source = new EventSource(`/event/?id=${userId}&db=inventoryDemo&collection=inventoryitems&query={}`);
+    const source = new EventSource(
+      `/event/?id=${clientId}&database=${database}&collection=${collection}&query=${query}`
+    );
+
     source.onmessage = e => {
-      console.log(JSON.parse(e.data));
-      const parsedMessage = JSON.parse(e.data);
+      const {type, data} = JSON.parse(e.data);
+      switch (type) {
+        case 'get':
+          {
+            const obj = {};
+            for(let i = 0; i < data.length; i++){
+              obj[data[i]._id] = data[i];
+              // delete obj[data[i]._id]._id; 
+            }
+            setInventoryList(obj);
+            break;
+          }
+        case 'insert' :
+          {
+            break;
+          }
+        case 'update' :
+          {
+            console.log(data);
+            const update = data.updateDescription.updatedFields;
+            const id = data.documentKey._id;
+            setInventoryList((previousInventoryList) => 
+            {
+              const updatedInventoryList = JSON.parse(JSON.stringify(previousInventoryList));
+              Object.assign(updatedInventoryList[id], update);
+              return updatedInventoryList;
+            });
+            break;
+          }
+        case 'delete' :
+          {
+            break;
+          }
+      }
+
       // const updatedInventoryList = JSON.parse(JSON.stringify(InventoryList));
-      setInventoryList((previousInventoryList) => 
-      {
-        const updatedInventoryList = JSON.parse(JSON.stringify(previousInventoryList));
-        updatedInventoryList[parsedMessage.documentKey._id].quantity = parsedMessage.updateDescription.updatedFields.quantity;
-        return updatedInventoryList;
-      });
+
     }
 
-  }, [userId])
+    return () => {
+      // Unsubscribe from event stream
+    }
+  }, [clientId, database, collection, query]);
+
+  return {inventoryList, clientId};
+}
+
+export default useSubscribe;

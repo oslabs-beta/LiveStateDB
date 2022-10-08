@@ -22,13 +22,12 @@ const Display = () => {
   //   // }
   //   // fetch(URL + new URLSearchParams(params))
   //   // const source = new EventSource(`/event/?id=${userId}`);
-
   //   //return object from message 
   //   // { type: (get, update, insert, delete)
   //   //   data: if get --> normal query response 
   //   //         else --> change stream
   //   // }
-  //   const source = new EventSource(`/event/?id=${clientId}&database=inventoryDemo&collection=inventoryitems&query={}`);
+  //   const source = new EventSource(`https://localhost:3001/event/?id=${userId}&database=inventoryDemo&collection=inventoryitems&query={}`);
   //   source.onmessage = e => {
   //     const {type, data} = JSON.parse(e.data);
   //     switch (type) {

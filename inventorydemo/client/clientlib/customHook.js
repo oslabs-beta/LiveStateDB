@@ -22,11 +22,12 @@ const useSubscribe = (database, collection, query) => {
     //         else --> change stream
     // }
     const source = new EventSource(
-      `/event/?id=${clientId}&database=${database}&collection=${collection}&query=${query}`
+      `https://localhost:3001/event/?id=${clientId}&database=inventoryDemo&collection=inventoryitems&query={}`
     );
 
     source.onmessage = e => {
       const {type, data} = JSON.parse(e.data);
+      const id = data.documentKey?._id;
       switch (type) {
         case 'get':
           {
@@ -40,13 +41,19 @@ const useSubscribe = (database, collection, query) => {
           }
         case 'insert' :
           {
+            const newInsertion = {};
+            newInsertion[id] = data.fullDocument;
+            setInventoryList((previousInventoryList) => 
+            {
+              const updatedInventoryList = JSON.parse(JSON.stringify(previousInventoryList));
+              Object.assign(updatedInventoryList, newInsertion);
+              return updatedInventoryList;
+            });
             break;
           }
         case 'update' :
           {
-            console.log(data);
             const update = data.updateDescription.updatedFields;
-            const id = data.documentKey._id;
             setInventoryList((previousInventoryList) => 
             {
               const updatedInventoryList = JSON.parse(JSON.stringify(previousInventoryList));
@@ -55,8 +62,15 @@ const useSubscribe = (database, collection, query) => {
             });
             break;
           }
-        case 'delete' :
+        case 'delete':
           {
+            setInventoryList((previousInventoryList) => 
+            {
+              const updatedInventoryList = JSON.parse(JSON.stringify(previousInventoryList));
+              delete updatedInventoryList[id];
+              return updatedInventoryList;
+            });
+            console.log('Delete case fired');
             break;
           }
       }

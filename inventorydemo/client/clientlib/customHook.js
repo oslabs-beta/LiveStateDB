@@ -6,27 +6,20 @@ const useSubscribe = (database, collection, query) => {
   const clientId = useMemo(() => uuid(), []);
   
   useEffect(() => {
-    //adding list of params to query
-    //   const params = {
-    //     type: 'public',
-    //     app_id: APP_ID,
-    //     app_key: APP_KEY,
-    //     q: id,
-    // }
-    // fetch(URL + new URLSearchParams(params))
-    // const source = new EventSource(`/event/?id=${userId}`);
+    const url = 'https://localhost:3001/event/?'
+    const params = {
+      database: database,
+      collection: collection,
+      query: JSON.stringify(query),
+      id: clientId
+    }
 
-    //return object from message 
-    // { type: (get, update, insert, delete)
-    //   data: if get --> normal query response 
-    //         else --> change stream
-    // }
-    const source = new EventSource(
-      `https://localhost:3001/event/?id=${clientId}&database=inventoryDemo&collection=inventoryitems&query={}`
-    );
+    const source = new EventSource(url + new URLSearchParams(params));
 
     source.onmessage = e => {
       const {type, data} = JSON.parse(e.data);
+      console.log('type', type);
+      console.log('data', data);
       const id = data.documentKey?._id;
       switch (type) {
         case 'get':
@@ -82,7 +75,7 @@ const useSubscribe = (database, collection, query) => {
     return () => {
       // Unsubscribe from event stream
     }
-  }, [clientId, database, collection, query]);
+  }, [clientId]);
 
   return {inventoryList, clientId};
 }

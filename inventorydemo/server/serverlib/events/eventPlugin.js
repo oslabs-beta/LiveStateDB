@@ -9,25 +9,23 @@ const subscriptionDbCollectionKeyDb = {};
 //keeps track of corresponding clients and their respective response objects
 const responseDb = {};
 
-const { initialDbQuery, monitorListingsUsingEventEmitter } = require('./eventRouteHelperFuncs')
+const { initialDbQuery, monitorListingsUsingEventEmitter } = require('./eventHelperFuncs')
+const connectToMongoDb = require('../mongoDb/mongoConnection')
 
 // SD+ --> subscriptionDocKeyDb
 // SC+ --> subscriptionClientKeyDb
 
-const client = require('../controllers/dbConnection');
-
 async function routes (fastify, options) {
 
-  //paste code here from google doc
-  fastify.register(require('@fastify/redis'), 
-    {host: 'redis-12753.c84.us-east-1-2.ec2.cloud.redislabs.com', 
-    port: 12753, 
-    password: 'YET7NOQHLnHgL9Yrktjz5Czb8rQL1ezH',
-    family: 4})
+  const { mongoDbOptions, redisDbOptions } = options;
+
+  const client = await connectToMongoDb(mongoDbOptions.uri)
+
+  fastify.register(require('@fastify/redis'), redisDbOptions)
 
   fastify.route({
     method: 'GET',
-    url: '/event/',
+    url: '/event/*',
     // this function is executed for every request before the handler is executed,
     handler: async (request, reply) => {
       const { redis } = fastify;
@@ -40,7 +38,9 @@ async function routes (fastify, options) {
       reply.raw.flushHeaders();
       reply.raw.write('retry: 10000\n\n')
 
+      console.log(request.query);
       const { id, collection, database, query } = request.query;
+
 
       //keep track of connection/reply object by clientId
       if(!responseDb[id]) responseDb[id] = reply;
@@ -54,8 +54,7 @@ async function routes (fastify, options) {
       if(redisSubscriptionDbCollectionKeyDb === 0){
         await redis.sadd(subscriptionDbCollectionKeyDbString, [id])
       }
-
-
+      
       initialDbQuery(dbCollection, query, redis, id, reply);
 
       //check if there is already a changestream for

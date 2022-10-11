@@ -1,11 +1,30 @@
 const express = require('express');
 const path = require('path');
-const api = require('./routes/api');
 const inventory = require('./routes/inventory');
-const event = require('./routes/event')
-const spdy = require ('spdy');
-const fs = require("fs");
-const http2 = require('http2');
+const fs = require('fs')
+
+//initalize stateServer
+const stateServer = require('./serverlib/stateServer');
+const stateServerOptions = 
+  {
+    https: {
+      key: fs.readFileSync(path.resolve(__dirname, './keys/server.key')),
+      cert: fs.readFileSync(path.resolve(__dirname, './keys/server.crt')),
+    },
+    mongoDbOptions: 
+      {
+        uri: "mongodb+srv://kevin:yZ3BdpdAgYaCsI6K@cluster0.cf7qs2t.mongodb.net/?retryWrites=true&w=majority"
+      },
+    redisDbOptions: 
+      { host: 'redis-12753.c84.us-east-1-2.ec2.cloud.redislabs.com', 
+        port: 12753, 
+        password: 'YET7NOQHLnHgL9Yrktjz5Czb8rQL1ezH',
+        family: 4
+      },
+    port: 3001
+  }
+
+stateServer(stateServerOptions);
 
 const PORT = process.env.EXPRESS_PORT || 3000;
 const app = express();
@@ -22,7 +41,6 @@ app.use((req, res, next) => {
 app.use('/build', express.static(path.resolve(__dirname, '../build')));
 
 // Handle router calls
-app.use('/api', api);
 app.use('/inventory', inventory);
 
 //Server Side Event Handler Test

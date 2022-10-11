@@ -3,7 +3,7 @@ eventRouteHelperFuncs = {};
 //find documents that are querried
 eventRouteHelperFuncs.initialDbQuery = async (dbCollection, query, redis, id, reply) => {
   const data = await dbCollection.find(JSON.parse(query)).toArray()
-  console.log
+  console.log('QUERY', query);
     //iterate through the array of objects from the db
     for(let objs of data){
       //check if the object's id has an entry in the subscription db

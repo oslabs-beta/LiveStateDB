@@ -1,14 +1,16 @@
-import React, { useState, useEffect, useId } from "react"
+import React, { useState, useEffect } from "react"
 import InventoryList from './InventoryList.jsx'
 import { getAllInventory } from '../services/inventory'
 import { handleDecrementClickHelper, handleIncremementClickHelper } from '../services/events'
 import uuid from 'react-uuid';
+import useSubscribe from "../clientlib/customHook.js";
 
+//! Can pass props to Display {database, collection, query}, then just pass those variables as args into useSubscribe(database, collection, query)
 const Display = () => {
-  const [ inventoryList, setInventoryList ] = useState({});
-  const [ userId, setUserId ] = useState(uuid());
+  const {inventoryList, clientId} = useSubscribe('inventoryDemo', 'inventoryitems', '{}');
+  // const [ inventoryList, setInventoryList ] = useState({});
+  // const [ clientId, setClientId ] = useState(uuid());
   
-
   useEffect(() => {
     //adding list of params to query
     //   const params = {
@@ -74,15 +76,16 @@ const Display = () => {
               delete updatedInventoryList[id];
               return updatedInventoryList;
             });
+            console.log('Delete case fired');
             break;
           }
       }
 
-      // const updatedInventoryList = JSON.parse(JSON.stringify(InventoryList));
+  //     // const updatedInventoryList = JSON.parse(JSON.stringify(InventoryList));
 
-    }
+  //   }
 
-  }, [userId])
+  // }, [clientId])
 
   //useEffect is called once to get initial data from DB - empty array brackets as 2nd param enables useEffect to only be called once
   // useEffect(() => {
@@ -101,12 +104,12 @@ const Display = () => {
   //increment/decrement click function
   const handleIncDecClick = (id, field, value) => {
     handleDecrementClickHelper(id, field, value)
-      .then((data) => {
+      // .then((data) => {
         //update the state, must copy object so React updates state
-        const obj = JSON.parse(JSON.stringify(inventoryList));
-        obj[data[0]._id] = data[0];
+        // const obj = JSON.parse(JSON.stringify(inventoryList));
+        // obj[data[0]._id] = data[0];
         // setInventoryList(obj);
-    })
+    // })
   }
 
   //increment click function
@@ -122,10 +125,10 @@ const Display = () => {
 
   return (
     <InventoryList
-    userId = { userId } 
-    inventoryList = { inventoryList }
-    handleIncDecClick = { handleIncDecClick }
-    setUserId = { setUserId }
+      clientId={clientId} 
+      inventoryList={inventoryList}
+      handleIncDecClick={handleIncDecClick}
+      // setClientId={setClientId}
     />
 );
 }

@@ -29,6 +29,9 @@ const Display = () => {
     const source = new EventSource(`https://localhost:3001/event/?id=${userId}&database=inventoryDemo&collection=inventoryitems&query={}`);
     source.onmessage = e => {
       const {type, data} = JSON.parse(e.data);
+      console.log('type', type);
+      console.log('data', data);
+      const id = data.documentKey?._id;
       switch (type) {
         case 'get':
           {
@@ -42,12 +45,19 @@ const Display = () => {
           }
         case 'insert' :
           {
+            const newInsertion = {};
+            newInsertion[id] = data.fullDocument;
+            setInventoryList((previousInventoryList) => 
+            {
+              const updatedInventoryList = JSON.parse(JSON.stringify(previousInventoryList));
+              Object.assign(updatedInventoryList, newInsertion);
+              return updatedInventoryList;
+            });
             break;
           }
         case 'update' :
           {
             const update = data.updateDescription.updatedFields;
-            const id = data.documentKey._id;
             setInventoryList((previousInventoryList) => 
             {
               const updatedInventoryList = JSON.parse(JSON.stringify(previousInventoryList));
@@ -56,8 +66,14 @@ const Display = () => {
             });
             break;
           }
-        case 'delete' :
+        case 'delete':
           {
+            setInventoryList((previousInventoryList) => 
+            {
+              const updatedInventoryList = JSON.parse(JSON.stringify(previousInventoryList));
+              delete updatedInventoryList[id];
+              return updatedInventoryList;
+            });
             break;
           }
       }

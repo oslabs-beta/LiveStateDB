@@ -43,11 +43,11 @@ module.exports = {
         target: 'http://localhost:3000/',
         secure: false,
       }, 
-      '/event/**': {
-        target: 'https://localhost:3000/',
-        secure: true,
-        ws: true,
-      }, 
+      // '/event/**': {
+      //   target: 'https://localhost:3000/',
+      //   secure: true,
+      //   ws: true,
+      // }, 
     },
   },
   

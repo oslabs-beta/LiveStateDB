@@ -1,35 +1,36 @@
 'use strict'
 const changeStreams = {};
-const subscriptionDb = {};
+//document keyed
+// const subscriptionDocKeyDb = {};
+//client keyed
+// const subscriptionClientKeyDb = {};
+//collection keyed
+const subscriptionDbCollectionKeyDb = {};
+//keeps track of corresponding clients and their respective response objects
 const responseDb = {};
 
-//!!give devs option for singular Redis or 3
-// CS+ --> changeStreams
-// S+ --> subscriptionDb
-// R+ --> responseDb
+// SD+ --> subscriptionDocKeyDb
+// SC+ --> subscriptionClientKeyDb
 
 const client = require('../controllers/dbConnection');
-
 
 async function routes (fastify, options) {
 
   //paste code here from google doc
-  // fastify.register(require('@fastify/redis'),
-  // {host:
-  //  port:
-  //  password:
-  //  family:}
-  // )
-  
+  fastify.register(require('@fastify/redis'), 
+    {host: 'redis-12753.c84.us-east-1-2.ec2.cloud.redislabs.com', 
+    port: 12753, 
+    password: 'YET7NOQHLnHgL9Yrktjz5Czb8rQL1ezH',
+    family: 4})
+
   fastify.route({
     method: 'GET',
     url: '/event/',
-        // this function is executed for every request before the handler is executed,
+    // this function is executed for every request before the handler is executed,
     handler: async (request, reply) => {
+      const genericReply = reply;
+
       const { redis } = fastify;
-      redis.set('key', 'testValue')
-      const redisResult = await redis.get('key')
-      console.log('redis.get(key)', redisResult)
       let headers = {
         'Cache-Control': 'no-cache',
         'Content-Type': 'text/event-stream',
@@ -42,63 +43,90 @@ async function routes (fastify, options) {
       const { id, collection, database, query } = request.query;
       
       //check if the user already has a response object entry in the db
+      const redisResDb = await redis.get('R' + id);
+      if(!redisResDb) {
+        redis.set('R' + id, JSON.stringify(reply))
+      }
+
       if(!responseDb[id]) responseDb[id] = reply;
+
       const dbCollection = client.db(database).collection(collection);
+      const subscriptionDbCollectionKeyDbString = 'DB' + database + 'COL' + collection;
+      const redisSubscriptionDbCollectionKeyDb = await redis.sismember(subscriptionDbCollectionKeyDbString, id);
+      if(redisSubscriptionDbCollectionKeyDb === 0){
+        await redis.sadd(subscriptionDbCollectionKeyDbString, [id])
+      }
+      const test = await redis.smembers(subscriptionDbCollectionKeyDbString);
+      (subscriptionDbCollectionKeyDb[subscriptionDbCollectionKeyDbString]) ? 
+      subscriptionDbCollectionKeyDb[subscriptionDbCollectionKeyDbString].add(id) : 
+      subscriptionDbCollectionKeyDb[subscriptionDbCollectionKeyDbString] = new Set ([id])
 
       //find documents that are querried
-      dbCollection.find(JSON.parse(query)).toArray()
-        .then((data) => {
+      const initialDbQuery = async () => {
+        const data = await dbCollection.find(JSON.parse(query)).toArray()
+        console.log
           //iterate through the array of objects from the db
           for(let objs of data){
             //check if the object's id has an entry in the subscription db
-            (subscriptionDb[objs._id]) ? subscriptionDb[objs._id].add(id) : subscriptionDb[objs._id] = new Set ([id])
+            //'SD'+
+            const redisSubscriptionDocKeyDb = await redis.sismember('SD' + objs._id, id);
+            if(redisSubscriptionDocKeyDb === 0){
+              await redis.sadd('SD' + objs._id, [id]);
+            }
+            
+            //check if the document is in the clients subscriptions
+            const redisSubscriptionClientKeyDb = await redis.sismember('SC' + id, objs._id);
+            if(redisSubscriptionClientKeyDb === 0){
+              await redis.sadd('SC' + id, [objs._id]);
+            }
           }
           reply.raw.write(`data: ${JSON.stringify({type: 'get', data: data})}\n\n`)
-        })
-  //!! add documents to database if no entry with user as value
-  //!! if there is an entry append the user to the set of values
+      }
+      initialDbQuery();
 
-  //check if there is already a changestream for
+      //check if there is already a changestream for
       if(!changeStreams[database]?.has(collection)) {
         //if database exists in object, add collection to set, if not make an entry with key database equal to new set with collection
         (changeStreams[database]) ? changeStreams[database].add(collection) : changeStreams[database] = new Set([collection])
-        await monitorListingsUsingEventEmitter(dbCollection, reply, subscriptionDb);
+        await monitorListingsUsingEventEmitter(dbCollection, redis);
       }
 
     }
   })
 }
 
-//!! make sure this is only called once for each collection
-async function monitorListingsUsingEventEmitter(client, reply, subscriptionDb, timeInMs = 600000, pipeline = []){
+//write helper function here for checking our redis databases for subscribed clients to send response to 
+const redisCrossCheck = async (set, redis, next) => {
+  for(const ele of set) {
+    try {
+      //if we fail to write to a client we want to mark the client for removal
+      const success = await responseDb[ele]?.raw.write(`data: ${JSON.stringify({type: next.operationType, data: next})}\n\n`)
+      if(!success) {
+        const failure = await redis.smembers('SC' + ele)
+        for(const docs of failure){
+          redis.srem('SD' + docs, ele)
+        }
+      }
+    }catch (err) {
+      console.log(`unable to update user with id: ${ele}`)
+    }
+  }
+}
+
+async function monitorListingsUsingEventEmitter(client, redis, timeInMs = 600000, pipeline = []){
   const changeStream = client.watch(pipeline);
   //listen for changes
-  console.log('change stream is on');
-  changeStream.on('change', (next) => {
-    //!! check to see who is subscribed to the document that is being changed
-    //!! get the res objects for all subscribers
-    //!! iterate over all res objects writing the change stream
-    console.log(next.documentKey._id.toString())
-    console.log(subscriptionDb)
-    if(subscriptionDb[next.documentKey._id.toString()]){
-      //iterate through all the subscribers
-      subscriptionDb[next.documentKey._id.toString()].forEach(ele => {
-        //send a response using responseDb
-        try {
-          responseDb[ele].raw.write(`data: ${JSON.stringify({type: next.operationType, data: next})}\n\n`)
-        }catch (err) {
-          console.log(`unable to update user with id: ${ele}`)
-        }
-
-      })
+  changeStream.on('change', async (next) => {
+    //check if it's an insertion event
+    if(next.operationType === 'insert'){
+      const { db, coll } = next.ns;
+      const concatString = 'DB' + db + 'COL' + coll;
+      const clientsSubscribedToCollection = await redis.smembers('DB' + db + 'COL' + coll)
+      redisCrossCheck(clientsSubscribedToCollection, redis, next);
     }
-
-    // console.log(subscriptionDb.user1.docs)
-    // console.log(next.documentKey._id.toString())
-    // console.log(next);
-    // if(subscriptionDb.user1.docs.has(next.documentKey._id.toString())){
-    //   res.write(`data: ${JSON.stringify({type: next.operationType, data: next})}\n\n`)
-    // }
+    const changeStreamDocId = next.documentKey._id.toString();
+    const redisSubDocKey = await redis.smembers('SD' + changeStreamDocId);
+    redisCrossCheck(redisSubDocKey, redis, next);
   });
   await closeChangeStream(timeInMs, changeStream);
 }
@@ -113,6 +141,5 @@ function closeChangeStream(timeInMs, changeStream) {
       }, timeInMs)
   })
 };
-
 
 module.exports = routes;

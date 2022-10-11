@@ -11,80 +11,75 @@ const Display = () => {
   // const [ inventoryList, setInventoryList ] = useState({});
   // const [ clientId, setClientId ] = useState(uuid());
   
+  useEffect(() => {
+    //adding list of params to query
+    //   const params = {
+    //     type: 'public',
+    //     app_id: APP_ID,
+    //     app_key: APP_KEY,
+    //     q: id,
+    // }
+    // fetch(URL + new URLSearchParams(params))
+    // const source = new EventSource(`/event/?id=${userId}`);
 
-  // useEffect(() => {
-  //   //adding list of params to query
-  //   //   const params = {
-  //   //     type: 'public',
-  //   //     app_id: APP_ID,
-  //   //     app_key: APP_KEY,
-  //   //     q: id,
-  //   // }
-  //   // fetch(URL + new URLSearchParams(params))
-  //   // const source = new EventSource(`/event/?id=${userId}`);
-  //   //return object from message 
-  //   // { type: (get, update, insert, delete)
-  //   //   data: if get --> normal query response 
-  //   //         else --> change stream
-  //   // }
-  //   const source = new EventSource(`https://localhost:3001/event/?id=${userId}&database=inventoryDemo&collection=inventoryitems&query={}`);
-  //   source.onmessage = e => {
-  //     const {type, data} = JSON.parse(e.data);
-  //     switch (type) {
-  //       case 'get':
-  //         {
-  //           console.log('Get case fired');
-  //           const obj = {};
-  //           for(let i = 0; i < data.length; i++){
-  //             obj[data[i]._id] = data[i];
-  //             // delete obj[data[i]._id]._id; 
-  //           }
-  //           setInventoryList(obj);
-  //           break;
-  //         }
-  //       case 'insert' :
-  //         {
-  //           console.log('Insert case fired');
-  //           // {
-  //           //   "item" : "iphone 5",
-  //           //   "quantity" : 15,
-  //           //   "description" : "used",
-  //           //   "price" : 75
-  //           // }
-  //           //! Don't I need document _id?
-  //           const newItem = data
-  //           console.log(newItem);
-  //           const id = data.documentKey._id;
-  //           console.log(id);
-  //           setInventoryList((previousInventoryList) => 
-  //           {
-  //             const updatedInventoryList = JSON.parse(JSON.stringify(previousInventoryList));
-  //             Object.assign(updatedInventoryList[id], newItem);
-  //             return updatedInventoryList;
-  //           });
-  //           break;
-  //         }
-  //       case 'update' :
-  //         {
-  //           console.log('Update case fired');
-  //           // console.log(data);
-  //           const update = data.updateDescription.updatedFields;
-  //           const id = data.documentKey._id;
-  //           console.log(`Updated data: ${update}\nDocument _id: ${id}`);
-  //           setInventoryList((previousInventoryList) => 
-  //           {
-  //             const updatedInventoryList = JSON.parse(JSON.stringify(previousInventoryList));
-  //             Object.assign(updatedInventoryList[id], update);
-  //             return updatedInventoryList;
-  //           });
-  //           break;
-  //         }
-  //       case 'delete' :
-  //         {
-  //           console.log('Delete case fired');
-  //           break;
-  //         }
-  //     }
+    //return object from message 
+    // { type: (get, update, insert, delete)
+    //   data: if get --> normal query response 
+    //         else --> change stream
+    // }
+
+    const source = new EventSource(`https://localhost:3001/event/?id=${userId}&database=inventoryDemo&collection=inventoryitems&query={}`);
+    source.onmessage = e => {
+      const {type, data} = JSON.parse(e.data);
+      console.log('type', type);
+      console.log('data', data);
+      const id = data.documentKey?._id;
+      switch (type) {
+        case 'get':
+          {
+            const obj = {};
+            for(let i = 0; i < data.length; i++){
+              obj[data[i]._id] = data[i];
+              // delete obj[data[i]._id]._id; 
+            }
+            setInventoryList(obj);
+            break;
+          }
+        case 'insert' :
+          {
+            const newInsertion = {};
+            newInsertion[id] = data.fullDocument;
+            setInventoryList((previousInventoryList) => 
+            {
+              const updatedInventoryList = JSON.parse(JSON.stringify(previousInventoryList));
+              Object.assign(updatedInventoryList, newInsertion);
+              return updatedInventoryList;
+            });
+            break;
+          }
+        case 'update' :
+          {
+            const update = data.updateDescription.updatedFields;
+            setInventoryList((previousInventoryList) => 
+            {
+              const updatedInventoryList = JSON.parse(JSON.stringify(previousInventoryList));
+              Object.assign(updatedInventoryList[id], update);
+              return updatedInventoryList;
+            });
+            break;
+          }
+        case 'delete':
+          {
+            setInventoryList((previousInventoryList) => 
+            {
+              const updatedInventoryList = JSON.parse(JSON.stringify(previousInventoryList));
+              delete updatedInventoryList[id];
+              return updatedInventoryList;
+            });
+            console.log('Delete case fired');
+            break;
+          }
+      }
 
   //     // const updatedInventoryList = JSON.parse(JSON.stringify(InventoryList));
 

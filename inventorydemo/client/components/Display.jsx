@@ -7,8 +7,8 @@ import useSubscribe from "../clientlib/customHook.js";
 
 //! Can pass props to Display {database, collection, query}, then just pass those variables as args into useSubscribe(database, collection, query)
 const Display = () => {
-  const {inventoryList, clientId} = useSubscribe('inventoryDemo', 'inventoryitems', '{}');
-
+  const { inventoryList, clientId} = useSubscribe('inventoryDemo', 'inventoryitems', {});
+  const { test, test2 } = useSubscribe('inventoryDemo', 'inventoryitems', {item: 'iphone 14'});
   //increment/decrement click function
   const handleIncDecClick = (id, field, value) => {
     handleDecrementClickHelper(id, field, value)

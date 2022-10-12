@@ -1,3 +1,0 @@
-module.exports =  {
-  user1: {docs: new Set(['6338734d9a5d5e69f3af9ef8', '6338735b9a5d5e69f3af9efa'])},
-}

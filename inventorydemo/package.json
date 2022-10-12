@@ -8,8 +8,7 @@
     "start": "nodemon server/server.js & NODE_ENV=development webpack serve --open",
     "build": "NODE_ENV=production webpack",
     "watch": "webpack --watch",
-    "dev": "NODE_ENV=development webpack serve --open",
-    "fastify": "nodemon server/server2.js & NODE_ENV=development webpack serve --open"
+    "dev": "NODE_ENV=development webpack serve --open"
   },
   "nodemonConfig": {
     "ignore": [

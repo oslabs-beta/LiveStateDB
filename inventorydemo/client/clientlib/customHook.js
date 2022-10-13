@@ -1,17 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import uuid from 'react-uuid';
 
-const useSubscribe = (database, collection, query) => {
+const useSubscribe = ({ database, collection, query }) => {
   const [inventoryList, setInventoryList] = useState({});
-  const clientId = useMemo(() => uuid(), []);
-  
+  const stateId = useMemo(() => uuid(), [])
   useEffect(() => {
     const url = 'https://localhost:3001/event/?'
     const params = {
       database: database,
       collection: collection,
       query: JSON.stringify(query),
-      id: clientId
+      id: stateId
     }
 
     const source = new EventSource(url + new URLSearchParams(params));
@@ -75,9 +74,9 @@ const useSubscribe = (database, collection, query) => {
     return () => {
       // Unsubscribe from event stream
     }
-  }, [clientId]);
+  }, [stateId]);
 
-  return {inventoryList, clientId};
+  return {inventoryList, stateId};
 }
 
 export default useSubscribe;

@@ -45,6 +45,7 @@
     "@fastify/redis": "^6.0.1",
     "babel-loader": "^8.2.5",
     "css-loader": "^6.7.1",
+    "fastify": "^4.8.1",
     "html-webpack-plugin": "^5.5.0",
     "nodemon": "^2.0.19",
     "redux-devtools-extension": "^2.13.9",

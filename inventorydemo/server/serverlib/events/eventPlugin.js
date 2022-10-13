@@ -29,7 +29,7 @@ async function routes (fastify, options) {
     // this function is executed for every request before the handler is executed,
     handler: async (request, reply) => {
       const { redis } = fastify;
-      let headers = {
+      const headers = {
         'Cache-Control': 'no-cache',
         'Content-Type': 'text/event-stream',
         'Access-Control-Allow-Origin': '*',

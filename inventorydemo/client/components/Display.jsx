@@ -3,7 +3,7 @@ import InventoryList from './InventoryList.jsx'
 import { getAllInventory } from '../services/inventory'
 import { handleDecrementClickHelper, handleIncremementClickHelper } from '../services/events'
 import uuid from 'react-uuid';
-import useSubscribe from "../clientlib/customHook.js";
+import useSubscribe from "../../../libraries/clientlib/customHook";
 
 //! Can pass props to Display {database, collection, query}, then just pass those variables as args into useSubscribe(database, collection, query)
 const Display = () => {

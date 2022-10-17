@@ -4,7 +4,7 @@ const inventory = require('./routes/inventory');
 const fs = require('fs')
 
 //initalize stateServer
-const stateServer = require('./serverlib/stateServer');
+const stateServer = require('../libraries/serverlib/stateServer');
 const stateServerOptions = 
   {
     https: {

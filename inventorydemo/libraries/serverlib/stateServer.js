@@ -6,7 +6,8 @@ module.exports = async (options) => {
 
   //options
   const { https, mongoDbOptions, redisDbOptions, port } = options;
-
+  
+  
   const fastify = require('fastify')({
     http2: true,
     https: https,

@@ -40,11 +40,11 @@ module.exports = {
         secure: false,
       },
       '/inventory/**': {
-        target: 'https://localhost:3000/',
+        target: 'https://localhost:3001/',
         secure: false,
       }, 
       '/event/**': {
-        target: 'https://localhost:3000/',
+        target: 'https://localhost:3001/',
         secure: true,
         ws: true,
       }, 

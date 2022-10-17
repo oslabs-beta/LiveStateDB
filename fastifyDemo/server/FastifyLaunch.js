@@ -15,8 +15,7 @@ module.exports = async (options) => {
     logger: true
   })
 
-  // what is event plugin?
-  fastify.register(require('./serverlib/events/eventPlugin'), 
+  fastify.register(require('../../inventorydemo/libraries/serverlib/events/eventPlugin'), 
     {
       redisDbOptions: redisDbOptions,
       mongoDbOptions: mongoDbOptions

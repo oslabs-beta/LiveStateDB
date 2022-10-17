@@ -3,17 +3,15 @@
 //holds current changeStream's open by DB & Collection
 const changeStreams = {};
 
-//A list of clients subscribed to Collections {('DB' + db + 'COL' + coll) : clientId}
-const subscriptionDbCollectionKeyDb = {};
-
 //keeps track of corresponding clients and their respective response objects
-const responseDb = {};
+const replyObjs = {};
 
 const { initialDbQuery, monitorListingsUsingEventEmitter } = require('./eventHelperFuncs')
 const connectToMongoDb = require('../mongoDb/mongoConnection')
 
 // SD+ --> subscriptionDocKeyDb
 // SC+ --> subscriptionClientKeyDb
+// --> 
 
 async function routes (fastify, options) {
 
@@ -38,30 +36,28 @@ async function routes (fastify, options) {
       reply.raw.flushHeaders();
       reply.raw.write('retry: 10000\n\n')
 
-      console.log(request.query);
-      const { id, collection, database, query } = request.query;
+      const { subscriptionId, collection, database, query } = request.query;
 
-
-      //keep track of connection/reply object by clientId
-      if(!responseDb[id]) responseDb[id] = reply;
+      //keep track of connection/reply object by clientsubscriptionId
+      if(!replyObjs[subscriptionId]) replyObjs[subscriptionId] = reply;
 
       //connect to the current collection
       const dbCollection = client.db(database).collection(collection);
 
       //add add clients to the DB & Collection's they are subscribed too -- for 'insert' updates
       const subscriptionDbCollectionKeyDbString = 'DB' + database + 'COL' + collection;
-      const redisSubscriptionDbCollectionKeyDb = await redis.sismember(subscriptionDbCollectionKeyDbString, id);
-      if(redisSubscriptionDbCollectionKeyDb === 0){
-        await redis.sadd(subscriptionDbCollectionKeyDbString, [id])
+      const redisClientIsSubscribedToCollection = await redis.sismember(subscriptionDbCollectionKeyDbString, subscriptionId);
+      if(redisClientIsSubscribedToCollection === 0){
+        await redis.sadd(subscriptionDbCollectionKeyDbString, [subscriptionId])
       }
       
-      initialDbQuery(dbCollection, query, redis, id, reply);
+      initialDbQuery(dbCollection, query, redis, subscriptionId, reply);
 
-      //check if there is already a changestream for
+      //check if there is already a changestream for the current collection
       if(!changeStreams[database]?.has(collection)) {
         //if database exists in object, add collection to set, if not make an entry with key database equal to new set with collection
         (changeStreams[database]) ? changeStreams[database].add(collection) : changeStreams[database] = new Set([collection])
-        await monitorListingsUsingEventEmitter(dbCollection, redis, responseDb);
+        await monitorListingsUsingEventEmitter(dbCollection, redis, replyObjs);
       }
     }
   })

@@ -11,7 +11,7 @@ const handleIncremementClickHelper = async (id, field, value) => {
 
 const handleDecrementClickHelper = async (id, field, value) => {
   //wait for result of calling function to decrement DB
-  await changeSingleInventoryField(id, field, value)
+  return changeSingleInventoryField(id, field, value)
   //then call the fucntion that gets inventory of single item from DB (update)
   // return getSingleInventory(id)
 }

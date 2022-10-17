@@ -1,36 +1,37 @@
 eventRouteHelperFuncs = {};
 
+
 //find documents that are querried
-eventRouteHelperFuncs.initialDbQuery = async (dbCollection, query, redis, id, reply) => {
+eventRouteHelperFuncs.initialDbQuery = async (dbCollection, query, redis, subscriptionId, reply) => {
   const data = await dbCollection.find(JSON.parse(query)).toArray()
   console.log('QUERY', query);
     //iterate through the array of objects from the db
     for(let objs of data){
       //check if the object's id has an entry in the subscription db
       //'SD'+
-      const redisSubscriptionDocKeyDb = await redis.sismember('SD' + objs._id, id);
-      if(redisSubscriptionDocKeyDb === 0){
-        await redis.sadd('SD' + objs._id, [id]);
+      const redisClientIsSubscribedToDocument = await redis.sismember('SD' + objs._id, subscriptionId);
+      if(redisClientIsSubscribedToDocument === 0){
+        await redis.sadd('SD' + objs._id, [subscriptionId]);
       }
       
       //check if the document is in the clients subscriptions
-      const redisSubscriptionClientKeyDb = await redis.sismember('SC' + id, objs._id);
-      if(redisSubscriptionClientKeyDb === 0){
-        await redis.sadd('SC' + id, [objs._id]);
+      const redisDocumentIsSubscribedToClient = await redis.sismember('SC' + subscriptionId, objs._id);
+      if(redisDocumentIsSubscribedToClient === 0){
+        await redis.sadd('SC' + subscriptionId, [objs._id]);
       }
     }
     reply.raw.write(`data: ${JSON.stringify({type: 'get', data: data})}\n\n`)
 }
 
 //write helper function here for checking our redis databases for subscribed clients to send response to 
-const redisCrossCheck = async (set, redis, next, responseDb) => {
-  for(const ele of set) {
+const sendReplyToSubscribers = async (setOfSubscriptionIds, redis, changeStreamObj, replyObjs) => {
+  for(const ele of setOfSubscriptionIds) {
     try {
       //if we fail to write to a client we want to mark the client for removal
-      const success = await responseDb[ele]?.raw.write(`data: ${JSON.stringify({type: next.operationType, data: next})}\n\n`)
+      const success = await replyObjs[ele]?.raw.write(`data: ${JSON.stringify({type: changeStreamObj.operationType, data: changeStreamObj})}\n\n`)
       if(!success) {
-        const failure = await redis.smembers('SC' + ele)
-        for(const docs of failure){
+        const setOfFailedReplySubscriptionIds = await redis.smembers('SC' + ele)
+        for(const docs of setOfFailedReplySubscriptionIds){
           redis.srem('SD' + docs, ele)
         }
       }
@@ -40,20 +41,30 @@ const redisCrossCheck = async (set, redis, next, responseDb) => {
   }
 }
 
-eventRouteHelperFuncs.monitorListingsUsingEventEmitter =  async (client, redis, responseDb, timeInMs = 6000000, pipeline = []) => {
+eventRouteHelperFuncs.monitorListingsUsingEventEmitter =  async (client, redis, replyObjs, timeInMs = 6000000, pipeline = []) => {
   const changeStream = client.watch(pipeline);
   //listen for changes
-  changeStream.on('change', async (next) => {
+  changeStream.on('change', async (changeStreamObj) => {
     //check if it's an insertion event
-    if(next.operationType === 'insert'){
-      const { db, coll } = next.ns;
-      const concatString = 'DB' + db + 'COL' + coll;
-      const clientsSubscribedToCollection = await redis.smembers('DB' + db + 'COL' + coll)
-      redisCrossCheck(clientsSubscribedToCollection, redis, next, responseDb);
+    if(changeStreamObj.operationType === 'insert'){
+      const { db, coll } = changeStreamObj.ns;
+      //
+      const redisSubscriptionIdsSubscribedToCollection = await redis.smembers('DB' + db + 'COL' + coll);
+      for(let subscriptionId of redisSubscriptionIdsSubscribedToCollection){
+        const redisClientIsSubscribedToDocument = await redis.sismember('SD' + changeStreamObj.documentKey._id.toString(), subscriptionId);
+        if(redisClientIsSubscribedToDocument === 0){
+          await redis.sadd('SD' + changeStreamObj.documentKey._id.toString(), [subscriptionId]);
+        }
+        const redisDocumentIsSubscribedToClient = await redis.sismember('SC' + subscriptionId, changeStreamObj.documentKey._id.toString());
+        if(redisDocumentIsSubscribedToClient === 0){
+          await redis.sadd('SC' + subscriptionId, [changeStreamObj.documentKey._id.toString()]);
+        }
+      }
+      sendReplyToSubscribers(redisSubscriptionIdsSubscribedToCollection, redis, changeStreamObj, replyObjs);
     }
-    const changeStreamDocId = next.documentKey._id.toString();
-    const redisSubDocKey = await redis.smembers('SD' + changeStreamDocId);
-    redisCrossCheck(redisSubDocKey, redis, next, responseDb);
+
+    const redisSubscriptionIdsSubscribedToDocument = await redis.smembers('SD' + changeStreamObj.documentKey._id.toString());
+    sendReplyToSubscribers(redisSubscriptionIdsSubscribedToDocument, redis, changeStreamObj, replyObjs);
   });
   await closeChangeStream(timeInMs, changeStream);
 }

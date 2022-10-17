@@ -2,15 +2,15 @@ import React, { useState, useEffect, useMemo } from 'react';
 import uuid from 'react-uuid';
 
 const useSubscribe = ({ database, collection, query }) => {
-  const [inventoryList, setInventoryList] = useState({});
-  const stateId = useMemo(() => uuid(), [])
+  const [ state, setstate ] = useState({});
+  const subscriptionId = useMemo(() => uuid(), [])
   useEffect(() => {
     const url = 'https://localhost:3001/event/?'
     const params = {
       database: database,
       collection: collection,
       query: JSON.stringify(query),
-      id: stateId
+      subscriptionId: subscriptionId
     }
 
     const source = new EventSource(url + new URLSearchParams(params));
@@ -28,55 +28,55 @@ const useSubscribe = ({ database, collection, query }) => {
               obj[data[i]._id] = data[i];
               // delete obj[data[i]._id]._id; 
             }
-            setInventoryList(obj);
+            setstate(obj);
             break;
           }
         case 'insert' :
           {
             const newInsertion = {};
             newInsertion[id] = data.fullDocument;
-            setInventoryList((previousInventoryList) => 
+            setstate((previousstate) => 
             {
-              const updatedInventoryList = JSON.parse(JSON.stringify(previousInventoryList));
-              Object.assign(updatedInventoryList, newInsertion);
-              return updatedInventoryList;
+              const updatedstate = JSON.parse(JSON.stringify(previousstate));
+              Object.assign(updatedstate, newInsertion);
+              return updatedstate;
             });
             break;
           }
         case 'update' :
           {
             const update = data.updateDescription.updatedFields;
-            setInventoryList((previousInventoryList) => 
+            setstate((previousstate) => 
             {
-              const updatedInventoryList = JSON.parse(JSON.stringify(previousInventoryList));
-              Object.assign(updatedInventoryList[id], update);
-              return updatedInventoryList;
+              const updatedstate = JSON.parse(JSON.stringify(previousstate));
+              Object.assign(updatedstate[id], update);
+              return updatedstate;
             });
             break;
           }
         case 'delete':
           {
-            setInventoryList((previousInventoryList) => 
+            setstate((previousstate) => 
             {
-              const updatedInventoryList = JSON.parse(JSON.stringify(previousInventoryList));
-              delete updatedInventoryList[id];
-              return updatedInventoryList;
+              const updatedstate = JSON.parse(JSON.stringify(previousstate));
+              delete updatedstate[id];
+              return updatedstate;
             });
             console.log('Delete case fired');
             break;
           }
       }
 
-      // const updatedInventoryList = JSON.parse(JSON.stringify(InventoryList));
+      // const updatedstate = JSON.parse(JSON.stringify(state));
 
     }
 
     return () => {
       // Unsubscribe from event stream
     }
-  }, [stateId]);
+  }, [subscriptionId]);
 
-  return {inventoryList, stateId};
+  return [ state, subscriptionId ];
 }
 
 export default useSubscribe;

@@ -38,10 +38,6 @@ const InventoryList = ({ inventoryList, handleIncDecClick }) => {
 
   return (
     <div>
-      <form onSubmit= { e => handleUserSubmit(e) }>
-        <input type='text' placeholder='user name' name='user'></input>
-        <button type='submit'>save</button>
-      </form>
       { inventory }
     </div>
 );

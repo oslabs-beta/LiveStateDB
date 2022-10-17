@@ -16,9 +16,9 @@ const stateServerOptions =
         uri: "mongodb+srv://kevin:yZ3BdpdAgYaCsI6K@cluster0.cf7qs2t.mongodb.net/?retryWrites=true&w=majority"
       },
     redisDbOptions: 
-      { host: 'redis-12753.c84.us-east-1-2.ec2.cloud.redislabs.com', 
-        port: 12753, 
-        password: 'YET7NOQHLnHgL9Yrktjz5Czb8rQL1ezH',
+      { host: 'redis-15711.c82.us-east-1-2.ec2.cloud.redislabs.com', 
+        port: 15711, 
+        password: 'o1dMUq5WaZLQUVvJDCcIJJEfxDCJwTAw',
         family: 4
       },
     port: 3001

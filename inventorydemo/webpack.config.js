@@ -39,7 +39,7 @@ module.exports = {
         target: 'http://localhost:3000/',
         secure: false,
       },
-      '/inventory/**': {
+      '/inventory/': {
         target: 'http://localhost:3000/',
         secure: false,
       }, 

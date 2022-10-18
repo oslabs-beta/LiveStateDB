@@ -1,5 +1,5 @@
 'use strict'
-
+const cors = require('@fastify/cors')
 //holds current changeStream's open by DB & Collection
 const changeStreams = {};
 
@@ -14,12 +14,32 @@ const connectToMongoDb = require('../mongoDb/mongoConnection')
 // --> 
 
 async function routes (fastify, options) {
-
   const { mongoDbOptions, redisDbOptions } = options;
 
   const client = await connectToMongoDb(mongoDbOptions.uri)
 
   fastify.register(require('@fastify/redis'), redisDbOptions)
+  await fastify.register(cors, { 
+    origin: {String: '*'}
+  })
+
+  fastify.route({
+    method: 'DELETE',
+    url: '/event/*',
+    // this function is executed for every request before the handler is executed,
+    handler: async (request, reply) => {
+      const { redis } = fastify;
+      const { subscriptionId } = request.query
+      const headers = {
+        'Connection': 'close'
+      }
+      console.log(replyObjs[subscriptionId]);
+      replyObjs[subscriptionId].raw.writeHead(200, headers);
+
+      reply.send({hello: 'world'})
+      //call some helper functino to unsubscribe
+    }
+  })
 
   fastify.route({
     method: 'GET',

@@ -1,21 +1,28 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import uuid from 'react-uuid';
 
 const useSubscribe = ({ database, collection, query }) => {
   const [ state, setstate ] = useState({});
   const subscriptionId = useMemo(() => uuid(), [])
+  // const [ source, setSource ] = useState();
+  const stringifiedQuery = JSON.stringify(query)
+  const source = useRef()
+
   useEffect(() => {
     const url = 'https://localhost:3001/event/?'
     const params = {
       database: database,
       collection: collection,
-      query: JSON.stringify(query),
+      query: stringifiedQuery,
       subscriptionId: subscriptionId
     }
-
-    const source = new EventSource(url + new URLSearchParams(params));
-
-    source.onmessage = e => {
+    
+    source.current = new EventSource(url + new URLSearchParams(params))
+    console.log('source.current: ', source.current);
+    // const newSource = new EventSource(url + new URLSearchParams(params));
+    // setSource(newSource);
+    
+    source.current.onmessage = e => {
       const {type, data} = JSON.parse(e.data);
       console.log('type', type);
       console.log('data', data);
@@ -66,17 +73,39 @@ const useSubscribe = ({ database, collection, query }) => {
             break;
           }
       }
-
-      // const updatedstate = JSON.parse(JSON.stringify(state));
-
     }
+
+
+
+   
 
     return () => {
       // Unsubscribe from event stream
+      //invoke stopSubscription
+      endSubscription();
     }
-  }, [subscriptionId]);
 
-  return [ state, subscriptionId ];
+
+  }, [database, collection, stringifiedQuery]); 
+
+
+
+  //write function that stops subscriptions
+  const endSubscription = () => {
+    console.log('in endSubscription')
+    // send delete request to Fastify server with subscription ID
+    fetch('https://localhost:3001/event/?subscriptionId=' + subscriptionId , {
+      method: 'DELETE',
+    })
+      .then(async (res) => {
+        console.log(source);
+        const eventClose = await source.current.close()
+        console.log('eventClose ', eventClose)
+      })
+      .finally(() => console.log('after endSubscription has ran'))
+  }
+
+  return [ state, endSubscription ];
 }
 
 export default useSubscribe;

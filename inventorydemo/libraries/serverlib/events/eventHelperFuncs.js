@@ -1,6 +1,5 @@
 eventRouteHelperFuncs = {};
 
-
 //find documents that are querried
 eventRouteHelperFuncs.initialDbQuery = async (dbCollection, query, redis, subscriptionId, reply) => {
   const data = await dbCollection.find(JSON.parse(query)).toArray()
@@ -25,18 +24,19 @@ eventRouteHelperFuncs.initialDbQuery = async (dbCollection, query, redis, subscr
 
 //write helper function here for checking our redis databases for subscribed clients to send response to 
 const sendReplyToSubscribers = async (setOfSubscriptionIds, redis, changeStreamObj, replyObjs) => {
-  for(const ele of setOfSubscriptionIds) {
+  for(const subscriptionId of setOfSubscriptionIds) {
     try {
       //if we fail to write to a client we want to mark the client for removal
-      const success = await replyObjs[ele]?.raw.write(`data: ${JSON.stringify({type: changeStreamObj.operationType, data: changeStreamObj})}\n\n`)
+      const success = await replyObjs[subscriptionId]?.raw.write(`data: ${JSON.stringify({type: changeStreamObj.operationType, data: changeStreamObj})}\n\n`)
       if(!success) {
-        const setOfFailedReplySubscriptionIds = await redis.smembers('SC' + ele)
-        for(const docs of setOfFailedReplySubscriptionIds){
-          redis.srem('SD' + docs, ele)
+        const setOfFailedReplyDocumentIds = await redis.smembers('SC' + subscriptionId)
+        for(const docs of setOfFailedReplyDocumentIds){
+          redis.srem('SD' + docs, subscriptionId)
         }
+        redis.del('SC' + subscriptionId);
       }
     }catch (err) {
-      console.log(`unable to update user with id: ${ele}`)
+      console.log(`unable to update user with id: ${subscriptionId}`)
     }
   }
 }

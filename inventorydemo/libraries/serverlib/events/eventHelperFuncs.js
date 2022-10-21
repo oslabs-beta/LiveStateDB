@@ -1,7 +1,7 @@
 eventRouteHelperFuncs = {};
 
 //find documents that are querried
-eventRouteHelperFuncs.initialDbQuery = async (dbCollection, query, redis, subscriptionId, reply) => {
+eventRouteHelperFuncs.initialDbQuery = async (dbCollection, query, redis, subscriptionId, io, websocketObj) => {
   const data = await dbCollection.find(JSON.parse(query)).toArray()
   console.log('QUERY', query);
     //iterate through the array of objects from the db
@@ -19,29 +19,30 @@ eventRouteHelperFuncs.initialDbQuery = async (dbCollection, query, redis, subscr
         await redis.sadd('SC' + subscriptionId, [objs._id]);
       }
     }
-    reply.raw.write(`data: ${JSON.stringify({type: 'get', data: data})}\n\n`)
+    io.to(websocketObj[subscriptionId]).emit('change', JSON.stringify({type: 'get', data: data}))
 }
 
 //write helper function here for checking our redis databases for subscribed clients to send response to 
-const sendReplyToSubscribers = async (setOfSubscriptionIds, redis, changeStreamObj, replyObjs) => {
+const sendReplyToSubscribers = async (setOfSubscriptionIds, redis, changeStreamObj, websocketObj, io) => {
   for(const subscriptionId of setOfSubscriptionIds) {
-    try {
+    // try {
       //if we fail to write to a client we want to mark the client for removal
-      const success = await replyObjs[subscriptionId]?.raw.write(`data: ${JSON.stringify({type: changeStreamObj.operationType, data: changeStreamObj})}\n\n`)
-      if(!success) {
-        const setOfFailedReplyDocumentIds = await redis.smembers('SC' + subscriptionId)
-        for(const docs of setOfFailedReplyDocumentIds){
-          redis.srem('SD' + docs, subscriptionId)
-        }
-        redis.del('SC' + subscriptionId);
-      }
-    }catch (err) {
-      console.log(`unable to update user with id: ${subscriptionId}`)
-    }
+      io.to(websocketObj[subscriptionId]).emit('change', JSON.stringify({type: changeStreamObj.operationType, data: changeStreamObj}))
+      // const success = await websocketObj[subscriptionId]?.raw.write(`data: ${JSON.stringify({type: changeStreamObj.operationType, data: changeStreamObj})}\n\n`)
+    //   if(!success) {
+    //     const setOfFailedReplyDocumentIds = await redis.smembers('SC' + subscriptionId)
+    //     for(const docs of setOfFailedReplyDocumentIds){
+    //       redis.srem('SD' + docs, subscriptionId)
+    //     }
+    //     redis.del('SC' + subscriptionId);
+    //   }
+    // }catch (err) {
+    //   console.log(`unable to update user with id: ${subscriptionId}`)
+    // }
   }
 }
 
-eventRouteHelperFuncs.monitorListingsUsingEventEmitter =  async (client, redis, replyObjs, timeInMs = 6000000, pipeline = []) => {
+eventRouteHelperFuncs.monitorListingsUsingEventEmitter =  async (client, redis, websocketObj, io, timeInMs = 6000000, pipeline = []) => {
   const changeStream = client.watch(pipeline);
   //listen for changes
   changeStream.on('change', async (changeStreamObj) => {
@@ -60,11 +61,11 @@ eventRouteHelperFuncs.monitorListingsUsingEventEmitter =  async (client, redis, 
           await redis.sadd('SC' + subscriptionId, [changeStreamObj.documentKey._id.toString()]);
         }
       }
-      sendReplyToSubscribers(redisSubscriptionIdsSubscribedToCollection, redis, changeStreamObj, replyObjs);
+      sendReplyToSubscribers(redisSubscriptionIdsSubscribedToCollection, redis, changeStreamObj, websocketObj, io);
     }
 
     const redisSubscriptionIdsSubscribedToDocument = await redis.smembers('SD' + changeStreamObj.documentKey._id.toString());
-    sendReplyToSubscribers(redisSubscriptionIdsSubscribedToDocument, redis, changeStreamObj, replyObjs);
+    sendReplyToSubscribers(redisSubscriptionIdsSubscribedToDocument, redis, changeStreamObj, websocketObj, io);
   });
   await closeChangeStream(timeInMs, changeStream);
 }

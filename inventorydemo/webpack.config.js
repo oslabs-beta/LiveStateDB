@@ -33,7 +33,7 @@ module.exports = {
     //   }
     // },
     compress: false,
-    port: 8080,
+    port: 8082,
     proxy: {
       '/api/**': {
         target: 'http://localhost:3000/',
@@ -48,6 +48,11 @@ module.exports = {
       //   secure: true,
       //   ws: true,
       // }, 
+      '/websocket': {
+        target: 'http://localhost:3000/',
+        secure: false,
+        ws: true,
+      }, 
     },
   },
   

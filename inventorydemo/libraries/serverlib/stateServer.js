@@ -1,31 +1,13 @@
 'use strict'
 const fs = require('fs')
 const path = require('path')
+const Redis = require('ioredis')
+const connectToMongoDb = require('./mongoDb/mongoConnection')
 
-module.exports = async (options) => {
 
-  //options
-  const { https, mongoDbOptions, redisDbOptions, port } = options;
-  
-  
-  const fastify = require('fastify')({
-    http2: true,
-    https: https,
-    logger: true
-  })
-  
-  fastify.register(require('./events/eventPlugin'), 
-    {
-      redisDbOptions: redisDbOptions,
-      mongoDbOptions: mongoDbOptions
-    })
-
-  fastify.listen({ port: port}, function (err, address) {
-    if (err) {
-      fastify.log.error(err)
-      console.log(err);
-      process.exit(1)
-    }
-    console.log(`Server is now listening on ${address}`)
-  })
+module.exports = async (changeStreamOptions) => {
+  const { mongoDbOptions, redisDbOptions } = changeStreamOptions;
+  const redis = new Redis(redisDbOptions);
+  const client = await connectToMongoDb(mongoDbOptions.uri)
+  return {redis, client}
 }

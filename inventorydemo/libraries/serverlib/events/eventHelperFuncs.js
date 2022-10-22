@@ -1,4 +1,7 @@
-const eventRouteHelperFuncs = {};
+// eventRouteHelperFuncs = {};
+
+//! File originally written without const declaration, but didn't error -> WHY?
+const eventRouteHelperFuncs = {}
 
 //find documents that are querried
 eventRouteHelperFuncs.initialDbQuery = async (dbCollection, query, redis, subscriptionId, io, websocketObj) => {

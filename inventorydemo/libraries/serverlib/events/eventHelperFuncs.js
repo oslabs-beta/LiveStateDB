@@ -1,9 +1,12 @@
+// * REDIS LEGEND - the strings below are added to the begining of the doc to create unique ID's
+// * SD = Subscription based on Document
+// * SC = Subscription based on Subcription ID's
+// * SQD = Subscription based on Query
+// * SQS = Subscription Query String
 eventRouteHelperFuncs = {};
-
 //find documents that are querried
 eventRouteHelperFuncs.initialDbQuery = async (dbCollection, query, redis, subscriptionId, io, websocketObj) => {
   const data = await dbCollection.find(JSON.parse(query)).toArray()
-  console.log('QUERY', query);
     //iterate through the array of objects from the db
     for(let objs of data){
       //check if the object's id has an entry in the subscription db
@@ -19,7 +22,7 @@ eventRouteHelperFuncs.initialDbQuery = async (dbCollection, query, redis, subscr
         await redis.sadd('SC' + subscriptionId, [objs._id]);
       }
     }
-    io.to(websocketObj[subscriptionId]).emit('change', JSON.stringify({type: 'get', data: data}))
+    io.to(websocketObj[subscriptionId]).emit(subscriptionId, JSON.stringify({type: 'get', data: data}))
 }
 
 //write helper function here for checking our redis databases for subscribed clients to send response to 
@@ -27,8 +30,8 @@ const sendReplyToSubscribers = async (setOfSubscriptionIds, redis, changeStreamO
   for(const subscriptionId of setOfSubscriptionIds) {
     // try {
       //if we fail to write to a client we want to mark the client for removal
-      io.to(websocketObj[subscriptionId]).emit('change', JSON.stringify({type: changeStreamObj.operationType, data: changeStreamObj}))
-      // const success = await websocketObj[subscriptionId]?.raw.write(`data: ${JSON.stringify({type: changeStreamObj.operationType, data: changeStreamObj})}\n\n`)
+      io.to(websocketObj[subscriptionId]).emit(subscriptionId, JSON.stringify({type: changeStreamObj.operationType, data: changeStreamObj}))
+    // const success = await websocketObj[subscriptionId]?.raw.write(`data: ${JSON.stringify({type: changeStreamObj.operationType, data: changeStreamObj})}\n\n`)
     //   if(!success) {
     //     const setOfFailedReplyDocumentIds = await redis.smembers('SC' + subscriptionId)
     //     for(const docs of setOfFailedReplyDocumentIds){
@@ -49,7 +52,6 @@ eventRouteHelperFuncs.monitorListingsUsingEventEmitter =  async (client, redis, 
     //check if it's an insertion event
     if(changeStreamObj.operationType === 'insert'){
       const { db, coll } = changeStreamObj.ns;
-      //
       const redisSubscriptionIdsSubscribedToCollection = await redis.smembers('DB' + db + 'COL' + coll);
       for(let subscriptionId of redisSubscriptionIdsSubscribedToCollection){
         const redisClientIsSubscribedToDocument = await redis.sismember('SD' + changeStreamObj.documentKey._id.toString(), subscriptionId);
@@ -68,6 +70,10 @@ eventRouteHelperFuncs.monitorListingsUsingEventEmitter =  async (client, redis, 
     sendReplyToSubscribers(redisSubscriptionIdsSubscribedToDocument, redis, changeStreamObj, websocketObj, io);
   });
   await closeChangeStream(timeInMs, changeStream);
+}
+
+eventRouteHelperFuncs.unsubscribe = async(redis, websocketId, websocketObj) => {
+
 }
 
 //this function will close the stream after a specified amount of time

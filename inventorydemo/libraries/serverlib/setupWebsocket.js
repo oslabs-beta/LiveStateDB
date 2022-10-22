@@ -1,12 +1,12 @@
 'use strict'
 const fs = require('fs')
 const path = require('path')
-const { initialDbQuery, monitorListingsUsingEventEmitter } = require('../serverlib/events/eventHelperFuncs')
+const { initialDbQuery, monitorListingsUsingEventEmitter, unsubscribe } = require('../serverlib/events/eventHelperFuncs')
 //holds current changeStream's open by DB & Collection
 const changeStreams = {};
 //keeps track of corresponding clients and their respective response objects
 const websocketObj = {};
-
+const subscriptionIdObj = {};
 
 module.exports = async (server, changeStreamOptions) => {
   const {redis, client} = await require('./stateServer')(changeStreamOptions);
@@ -21,6 +21,10 @@ module.exports = async (server, changeStreamOptions) => {
         console.log('changeSteamOptions', changeStreamOptions)
         //keep track of connection/reply object by clientsubscriptionId
         if(!websocketObj[subscriptionId]) websocketObj[subscriptionId] = socket.id;
+        //!! can use redis for this later
+        (subscriptionIdObj[socket.id]) ? 
+          subscriptionIdObj[socket.id].add(subscriptionId) :
+          subscriptionIdObj[socket.id] = new Set([subscriptionId])
 
         //connect to the current collection
         const dbCollection = client.db(database).collection(collection);
@@ -45,6 +49,9 @@ module.exports = async (server, changeStreamOptions) => {
         const dbCollection = client.db(database).collection(collection);
         //call a function that unsubscribes from all docs for the current subscriptionId
         initialDbQuery(dbCollection, query, redis, subscriptionId, io, websocketObj)
+      })
+      socket.on('disconnect', () => {
+        unsubscribe(redis, socket.id, websocketObj);
       })
     })
 }

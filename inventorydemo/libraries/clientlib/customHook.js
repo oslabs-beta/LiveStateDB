@@ -1,33 +1,47 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import uuid from 'react-uuid';
 import { io } from 'socket.io-client'
+// import { Socket } from './clientSocket.js'
+
+// export class Subscribe {
+//   constructor() {
+//     console.log('constructor init')
+//     socket = io("/", {
+//       path: '/websocket',
+//       transports: ["websocket"]
+//     });
+
+//     setup = (params) => socket.emit('setup', params);
+//   }
+
+const Subscribe = () => {
+  const socket = io("/", {
+    path: '/websocket',
+    transports: ["websocket"]
+  })
+  const setup = (params) => socket.emit('setup', params);
 
 const useSubscribe = ({ database, collection, query }) => {
   const [ state, setstate ] = useState({});
+
   const subscriptionId = useMemo(() => uuid(), [])
   const stringifiedQuery = JSON.stringify(query)
   const currSocket = useRef(null);
   const didMount = useRef(false);
 
   useEffect(() => {
-
-    console.log('subscriptionId: ', subscriptionId)
     const params = {
       database: database,
       collection: collection,
       query: stringifiedQuery,
       subscriptionId: subscriptionId
     }
-    const socket = io("/", {
-      path: '/websocket',
-      transports: ["websocket"]
-    });
 
-
-    socket.emit('setup', params)
+    setup(params);
+    // socket.emit('setup', params)
     currSocket.current = socket;
     
-    socket.on('change', (e) => {
+    socket.on(subscriptionId, (e) => {
       console.log(JSON.parse(e));
       const {type, data} = JSON.parse(e);
       console.log('type', type);
@@ -98,7 +112,7 @@ const useSubscribe = ({ database, collection, query }) => {
         query: stringifiedQuery,
         subscriptionId: subscriptionId
       })
-      //event emitter for letting the server know something has changed for this subscription
+      //event emitter for letting the server know something has changed for subscription
       console.log('useeffect for change in deps.')
     }else didMount.current = true;
   }, [database, collection, stringifiedQuery])
@@ -110,5 +124,11 @@ const useSubscribe = ({ database, collection, query }) => {
 
   return [ state, endSubscription ];
 }
+return useSubscribe;
+}
 
-export default useSubscribe;
+const funcInvocation = Subscribe();
+const obj = {};
+obj.useSubscribe = funcInvocation;
+
+export default obj;

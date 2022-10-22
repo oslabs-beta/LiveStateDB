@@ -1,9 +1,9 @@
-eventRouteHelperFuncs = {};
+const eventRouteHelperFuncs = {};
 
 //find documents that are querried
 eventRouteHelperFuncs.initialDbQuery = async (dbCollection, query, redis, subscriptionId, io, websocketObj) => {
   try {
-    const data = await dbCollection.find(JSON.parse(query)).toArray()
+    const data = await dbCollection.find(JSON.parse(query)).toArray()  
     // console.log('QUERY', query);
       //iterate through the array of objects from the db
       for(let objs of data){
@@ -23,7 +23,6 @@ eventRouteHelperFuncs.initialDbQuery = async (dbCollection, query, redis, subscr
   } catch (err) {
     if (err) {
       console.log(`Error occured while subscribing or unsubscribing to the DB query.  errName: ${err.name}, errMessage: ${err.message}, errStack: ${err.stack}`)
-      
     } else {
       let initialDbQueryError = new Error('An unknown error occured while subscribing or unsubscribing to the DB query')
       console.log(initialDbQueryError)

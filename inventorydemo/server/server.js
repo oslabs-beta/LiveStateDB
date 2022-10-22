@@ -66,3 +66,5 @@ const changeStreamOptions =
   }
 
 require('../libraries/serverlib/setupWebsocket')(server, changeStreamOptions)
+  .catch(console.error)
+  

@@ -10,24 +10,17 @@ module.exports = async (changeStreamOptions) => {
  
   try {
   const redis = new Redis(redisDbOptions);
-} catch (err) {
-  if (err) {
-    console.log(`Error occured when connecting to Redis.  errName: ${err.name}, errMessage: ${err.message}, errStack: ${err.stack}`)
-  } else {
-    let redisError = new Error('An error occured when connecting to Redis')
-    console.log(redisError)
-  }
-}
-try {
   const client = await connectToMongoDb(mongoDbOptions.uri)
+  
+  return {redis, client}
   } catch (err) {
+
     if (err) {
-      console.log(`Error occured when connecting to MongoDB.  errName: ${err.name}, errMessage: ${err.message}, errStack: ${err.stack}`)
+      console.log(`Error occured when connecting to MongoDB or Redis.  errName: ${err.name}, errMessage: ${err.message}, errStack: ${err.stack}`)
+
     } else {
-      let mongoDbError = new Error('An error occured when connecting to MongoDB')
-      console.log(mongoDbError)
+      let dbError = new Error('An unknown error occured when connecting to MongoDB or Redis')
+      console.log(dbError)
     }
   }
-
-  return {redis, client}
 }

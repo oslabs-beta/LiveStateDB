@@ -8,7 +8,7 @@ const changeStreams = {};
 const websocketObj = {};
 
 const changeStreamOptionsType = {
-  database: 'number',
+  database: 'string',
   collection: 'string',
   query: 'string',
   subscriptionId: 'string'
@@ -25,7 +25,7 @@ module.exports = async (server, changeStreamOptions) => {
       socket.on('setup', async (changeStreamOptions) => {
         for (let prop in changeStreamOptions) {
           if (typeof changeStreamOptions[prop] !== changeStreamOptionsType[prop]) {
-            throw `${prop} should be ${changeStreamOptionsType[prop]}`
+            throw new Error(`\x1b[36m${prop} changeStreamOptions should be ${changeStreamOptionsType[prop]}\x1b[0m`)
           }
         }
         try {
@@ -55,7 +55,7 @@ module.exports = async (server, changeStreamOptions) => {
         } catch (err) {
           if (err) {
             if (err) {
-              console.error(`Error occured while setting up the websocket.  errName: ${err.name}, errMessage: ${err.message}, errStack: ${err.stack}`)
+              console.error('setupWebsocket err:', err)
           } else {
             let initialDbQueryError = new Error('An unknown error occured while setting up the websocket')
             console.error(initialDbQueryError)

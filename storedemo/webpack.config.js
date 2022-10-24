@@ -5,10 +5,10 @@ const fs = require('fs');
 console.log('NODE_ENV: ', process.env.NODE_ENV)
 
 module.exports = {
-  entry: path.resolve(__dirname, '../inventorydemo/client'),
+  entry: path.resolve(__dirname, './client/index.js'),
 
   output: {
-    path: path.resolve(__dirname, '../inventorydemo/build/'),
+    path: path.resolve(__dirname, './build/'),
     filename: 'bundle.js',
     publicPath: '/build',
   },
@@ -18,36 +18,36 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       title: 'Development',
-      template: path.resolve(__dirname, '../inventorydemo/build/index.html')
+      template: path.resolve(__dirname, './public/index.html')
     }),
   ],
   devServer: {
     static: {
       directory: path.resolve(__dirname, './public/'),
     },
-    server: {
-      type: 'https',
-      options: {
-        key: fs.readFileSync(path.resolve(__dirname, '../inventoryDemo/server/keys/server.key')),
-        cert: fs.readFileSync(path.resolve(__dirname, '../inventoryDemo/server/keys/server.crt'))
-      }
-    },
+    // server: {
+    //   type: 'https',
+    //   options: {
+    //     key: fs.readFileSync(path.resolve(__dirname, './server/keys/server.key')),
+    //     cert: fs.readFileSync(path.resolve(__dirname, './server/keys/server.crt'))
+    //   }
+    // },
     compress: false,
-    port: 8080,
+    port: 9000,
     proxy: {
       '/api/**': {
         target: 'http://localhost:3000/',
         secure: false,
       },
       '/inventory/**': {
-        target: 'https://localhost:3001/',
+        target: 'http://localhost:3004/',
         secure: false,
       }, 
-      '/event/**': {
-        target: 'https://localhost:3001/',
-        secure: true,
-        ws: true,
-      }, 
+      // '/event/**': {
+      //   target: 'https://localhost:3000/',
+      //   secure: true,
+      //   ws: true,
+      // }, 
     },
   },
   

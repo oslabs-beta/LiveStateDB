@@ -5,10 +5,10 @@ const fs = require('fs');
 console.log('NODE_ENV: ', process.env.NODE_ENV)
 
 module.exports = {
-  entry: path.resolve(__dirname, './client/index.js'),
+  entry: path.resolve(__dirname, './inventorydemo/client/index.js'),
 
   output: {
-    path: path.resolve(__dirname, './build/'),
+    path: path.resolve(__dirname, './inventorydemo/build/'),
     filename: 'bundle.js',
     publicPath: '/build',
   },
@@ -18,12 +18,12 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       title: 'Development',
-      template: path.resolve(__dirname, './public/index.html')
+      template: path.resolve(__dirname, './inventorydemo/public/index.html')
     }),
   ],
   devServer: {
     static: {
-      directory: path.resolve(__dirname, './public/'),
+      directory: path.resolve(__dirname, './inventorydemo/public/'),
     },
     // server: {
     //   type: 'https',

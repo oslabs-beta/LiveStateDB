@@ -1,0 +1,11 @@
+ul > li {
+  display: inline-block;
+}
+
+li {
+  width: 15%;
+}
+
+ul {
+  display: flex;
+}

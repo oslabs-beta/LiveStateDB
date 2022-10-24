@@ -1,0 +1,16 @@
+{
+  "name": "@livestatedb/server",
+  "version": "1.0.1",
+  "description": "LivestateDB API server package that will hook into an http server",
+  "main": "setupWebsocket.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ioredis": "^5.2.3",
+    "mongodb": "^4.10.0",
+    "socket.io": "^4.5.3"
+  }
+}

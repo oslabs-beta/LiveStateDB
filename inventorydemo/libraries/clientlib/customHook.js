@@ -23,7 +23,6 @@ const Subscribe = () => {
 
 const useSubscribe = ({ database, collection, query }) => {
   const [ state, setstate ] = useState({});
-
   const subscriptionId = useMemo(() => uuid(), [])
   const stringifiedQuery = JSON.stringify(query)
   const currSocket = useRef(null);
@@ -127,8 +126,8 @@ const useSubscribe = ({ database, collection, query }) => {
 return useSubscribe;
 }
 
-const funcInvocation = Subscribe();
-const obj = {};
-obj.useSubscribe = funcInvocation;
+// const funcInvocation = Subscribe();
+// const obj = {};
+// obj.useSubscribe = funcInvocation;
 
-export default obj;
+export const useSubscribe = Subscribe();

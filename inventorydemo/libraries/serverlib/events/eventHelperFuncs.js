@@ -1,4 +1,8 @@
-// eventRouteHelperFuncs = {};
+// * REDIS LEGEND - the strings below are added to the begining of the doc to create unique ID's
+// * SD = Subscription based on Document
+// * SC = Subscription based on Subcription ID's
+// * SQD = Subscription based on Query
+// * SQS = Subscription Query String
 
 //! File originally written without const declaration, but didn't error -> WHY?
 const eventRouteHelperFuncs = {}
@@ -22,7 +26,7 @@ eventRouteHelperFuncs.initialDbQuery = async (dbCollection, query, redis, subscr
           await redis.sadd('SC' + subscriptionId, [objs._id]);
         }
       }
-      io.to(websocketObj[subscriptionId]).emit('change', JSON.stringify({type: 'get', data: data}))
+      io.to(websocketObj[subscriptionId]).emit(subscriptionId, JSON.stringify({type: 'get', data: data}))
   } catch (err) {
     if (err) {
       console.log(`Error occured while subscribing or unsubscribing to the DB query.  errName: ${err.name}, errMessage: ${err.message}, errStack: ${err.stack}`)
@@ -30,15 +34,15 @@ eventRouteHelperFuncs.initialDbQuery = async (dbCollection, query, redis, subscr
       let initialDbQueryError = new Error('An unknown error occured while subscribing or unsubscribing to the DB query')
       console.log(initialDbQueryError)
     }
-  }  
+}
 }
 
 //write helper function here for checking our redis databases for subscribed clients to send response to 
 const sendReplyToSubscribers = async (setOfSubscriptionIds, redis, changeStreamObj, websocketObj, io) => {
-  for(const subscriptionId of setOfSubscriptionIds) {
+  for(const subscriptionId of setOfSubscriptionIds) {  
     try {
       // if we fail to write to a client we want to mark the client for removal
-      io.to(websocketObj[subscriptionId]).emit('change', JSON.stringify({type: changeStreamObj.operationType, data: changeStreamObj}))
+      io.to(websocketObj[subscriptionId]).emit(subscriptionId, JSON.stringify({type: changeStreamObj.operationType, data: changeStreamObj}))
     } catch (err) {
         if (err) {
           console.log(`Error occured in sending reply to subscribers.  errName: ${err.name}, errMessage: ${err.message}, errStack: ${err.stack}`) 
@@ -105,6 +109,26 @@ eventRouteHelperFuncs.monitorListingsUsingEventEmitter =  async (client, redis, 
   await closeChangeStream(timeInMs, changeStream);
 }
 
+eventRouteHelperFuncs.unsubscribe = async(redis, websocketId, websocketObj, subscriptionIdObj, changeStreams) => {
+  for(const subscriptionId of subscriptionIdObj[websocketId]){
+    const docs = await redis.smembers('SC' + subscriptionId)
+    for(const doc of docs){
+      redis.srem('SD' + doc, subscriptionId)
+    }
+    const changeStreams = await redis.smembers('DBCOL' + websocketId)
+    for(const changeStream of changeStreams){
+      console.log(changeStream);
+      await redis.srem(changeStream, websocketId)
+    }
+    redis.del('DBCOL' + websocketId);
+    redis.del('SC' + subscriptionId);
+  }
+}
+
+eventRouteHelperFuncs.changeSubscribe = async(redis, websocketId, websocketObj) => {
+
+}
+
 //this function will close the stream after a specified amount of time
 function closeChangeStream(timeInMs, changeStream) {
   return new Promise((resolve) => {
@@ -114,6 +138,6 @@ function closeChangeStream(timeInMs, changeStream) {
           resolve();
       }, timeInMs)
   })
-};
+}
 
 module.exports = eventRouteHelperFuncs;

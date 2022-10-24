@@ -66,6 +66,6 @@ const changeStreamOptions =
       },
   }
 
-require('../libraries/serverlib/setupWebsocket')(server, changeStreamOptions)
+require('@livestatedb/server')(server, changeStreamOptions)
   .catch(console.error)
   

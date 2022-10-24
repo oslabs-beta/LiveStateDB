@@ -1,7 +1,6 @@
-'use strict'
 const fs = require('fs')
 const path = require('path')
-const { initialDbQuery, monitorListingsUsingEventEmitter, unsubscribe } = require('../serverlib/events/eventHelperFuncs')
+const { initialDbQuery, monitorListingsUsingEventEmitter, unsubscribe } = require('./events/eventHelperFuncs')
 //holds current changeStream's open by DB & Collection
 const changeStreams = {};
 //keeps track of corresponding clients and their respective response objects
@@ -17,7 +16,7 @@ const changeStreamOptionsType = {
 
 module.exports = async (server, changeStreamOptions) => {
   
-  const {redis, client} = await require('./stateServer')(changeStreamOptions);
+  const {redis, client} = await require('./database/databaseConnect')(changeStreamOptions);
   const io = require('socket.io')(server, {
     path: '/websocket',
     transports: ["websocket"],

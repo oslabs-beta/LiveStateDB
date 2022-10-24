@@ -2,15 +2,16 @@
 const fs = require('fs')
 const path = require('path')
 const Redis = require('ioredis')
-const connectToMongoDb = require('./mongoDb/mongoConnection')
-
+const { MongoClient } = require('mongodb');
 
 module.exports = async (changeStreamOptions) => {
   const { mongoDbOptions, redisDbOptions } = changeStreamOptions;
  
   try {
+  const client = new MongoClient(mongoDbOptions.uri);
+  await client.connect();
   const redis = new Redis(redisDbOptions);
-  const client = await connectToMongoDb(mongoDbOptions.uri)
+
   
   return {redis, client}
   } catch (err) {

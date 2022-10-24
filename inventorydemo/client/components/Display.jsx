@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from "react"
 import InventoryList from './InventoryList.jsx'
 import { changeSingleInventoryField } from '../services/inventory'
 // import { handleDecrementClickHelper } from '../services/events'
-import { useSubscribe } from "../../libraries/clientlib/customHook.js";
+import { useSubscribe } from "@livestatedb/client";
 
 //! Can pass props to Display {database, collection, query}, then just pass those variables as args into useSubscribe(database, collection, query)
 const Display = () => {

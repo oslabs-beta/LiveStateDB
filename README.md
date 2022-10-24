@@ -1,4 +1,4 @@
-# LiveState
+# LiveStateDB
 A real time state management library. Using both the front-end react custom hook library and the back-end state server library you can subscribe a piece of state to a real-time mongoDB database. 
 
 Custom Hook:

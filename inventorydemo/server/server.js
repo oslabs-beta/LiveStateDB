@@ -4,6 +4,7 @@ const inventory = require('./routes/inventory');
 const fs = require('fs');
 const http = require('http');
 
+
 const PORT = process.env.EXPRESS_PORT || 3000;
 const app = express();
 
@@ -66,3 +67,5 @@ const changeStreamOptions =
   }
 
 require('../libraries/serverlib/setupWebsocket')(server, changeStreamOptions)
+  .catch(console.error)
+  

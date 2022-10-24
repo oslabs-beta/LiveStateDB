@@ -7,8 +7,15 @@ const changeStreams = {};
 //keeps track of corresponding clients and their respective response objects
 const websocketObj = {};
 
+const changeStreamOptionsType = {
+  database: 'string',
+  collection: 'string',
+  query: 'string',
+  subscriptionId: 'string'
+}
 
 module.exports = async (server, changeStreamOptions) => {
+  
   const {redis, client} = await require('./stateServer')(changeStreamOptions);
   const io = require('socket.io')(server, {
     path: '/websocket',
@@ -16,10 +23,15 @@ module.exports = async (server, changeStreamOptions) => {
   })
     io.on('connection', async (socket) => { 
       socket.on('setup', async (changeStreamOptions) => {
+        for (let prop in changeStreamOptions) {
+          if (typeof changeStreamOptions[prop] !== changeStreamOptionsType[prop]) {
+            throw new Error(`\x1b[36m${prop} changeStreamOptions should be ${changeStreamOptionsType[prop]}\x1b[0m`)
+          }
+        }
         try {
           const { subscriptionId, collection, database, query } = changeStreamOptions;
-          console.log('query', query);
-          console.log('changeSteamOptions', changeStreamOptions)
+          console.error('query', query);
+          console.error('changeSteamOptions', changeStreamOptions) 
           //keep track of connection/reply object by clientsubscriptionId
           if(!websocketObj[subscriptionId]) websocketObj[subscriptionId] = socket.id;
 
@@ -42,14 +54,15 @@ module.exports = async (server, changeStreamOptions) => {
           }
         } catch (err) {
           if (err) {
-            console.log(`Error occured while setting up the websocket.  errName: ${err.name}, errMessage: ${err.message}, errStack: ${err.stack}`)
-            
+            if (err) {
+              console.error('setupWebsocket err:', err)
           } else {
             let initialDbQueryError = new Error('An unknown error occured while setting up the websocket')
-            console.log(initialDbQueryError)
+            console.error(initialDbQueryError)
+          }
           }
         }
-      })
+      })  
       socket.on('depChange', async ({database, collection, query, subscriptionId}) => {
         const dbCollection = client.db(database).collection(collection);
         //call a function that unsubscribes from all docs for the current subscriptionId

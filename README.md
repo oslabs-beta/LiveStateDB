@@ -119,7 +119,7 @@ const databaseInfo =
   }
 ```
 
-That's it! Your front-end will now be able to disaply or work with the subscribed database data as it updates in real time - regardless of where the change originates from.
+That's it! Your front-end will now be able to display or work with the subscribed database data as it updates in real time - regardless of where the change originates from.
 
 Thanks for your interest in LiveStateDB, and we hope this improves your development experience.
 

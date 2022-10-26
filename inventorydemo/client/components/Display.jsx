@@ -11,9 +11,7 @@ const Display = () => {
   //   collection: 'inventoryitems',
   //   query: {}
   // }
-
-
-  
+ 
   const testHookOptions = {
     database: 'inventoryDemo',
     collection: 'inventoryitems',
@@ -32,26 +30,34 @@ const Display = () => {
   const handleIncDecClick = (id, field, value) => {
     changeSingleInventoryField(id, field, value)
   }
-
   return (
-    <>
-      <InventoryList
-        inventoryList={inventoryList}
-        handleIncDecClick={handleIncDecClick}
-      />
-      <button onClick={() => endSubscription() }> Unsubscribe </button>
-      <button onClick={() => {
-        const newOptions = JSON.parse(JSON.stringify(inventoryHookOptions));
-        newOptions.query = {item: 'iphone 14'};
-        setInventoryHookOptions(newOptions);
-      }}> Change Query to item: 'iphone 14'</button>
-            <button onClick={() => {
-        const newOptions = JSON.parse(JSON.stringify(inventoryHookOptions));
-        newOptions.query = {};
-        setInventoryHookOptions(newOptions);
-      }}> Change Query to object</button>
-
-    </>
+    <div>
+      <div className='header'>
+        <h1>
+        <img src="./images/transparent.png" className='rickPicLeft'></img>
+          Rick Rollin' Records
+        <img src="./images/transparent.png" className='rickPicRight'></img>
+        </h1>
+      </div>
+      <div className='display'>
+        <h2> Inventory Manager </h2>
+        <InventoryList
+          inventoryList={inventoryList}
+          handleIncDecClick={handleIncDecClick}
+        />
+        {/* <button onClick={() => endSubscription() }> Unsubscribe </button>
+        <button onClick={() => {
+          const newOptions = JSON.parse(JSON.stringify(inventoryHookOptions));
+          newOptions.query = {item: 'iphone 14'};
+          setInventoryHookOptions(newOptions);
+        }}> Change Query to item: 'iphone 14'</button>
+              <button onClick={() => {
+          const newOptions = JSON.parse(JSON.stringify(inventoryHookOptions));
+          newOptions.query = {};
+          setInventoryHookOptions(newOptions);
+        }}> Change Query to object</button> */}
+      </div>
+    </div>
   );
 }
 

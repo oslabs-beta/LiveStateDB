@@ -11,7 +11,6 @@ const eventRouteHelperFuncs = {}
 eventRouteHelperFuncs.initialDbQuery = async (dbCollection, query, redis, subscriptionId, io, websocketObj) => {
   try {
     const data = await dbCollection.find(JSON.parse(query)).toArray()  
-    // console.log('QUERY', query);
       //iterate through the array of objects from the db
       for(let objs of data){
         //check if the object's id has an entry in the subscription db
@@ -54,7 +53,7 @@ const sendReplyToSubscribers = async (setOfSubscriptionIds, redis, changeStreamO
   }
 }
 
-eventRouteHelperFuncs.monitorListingsUsingEventEmitter =  async (client, redis, websocketObj, io, timeInMs = 6000000, pipeline = []) => {
+eventRouteHelperFuncs.monitorListingsUsingEventEmitter =  async (client, redis, websocketObj, io, timeInMs = 2147483647, pipeline = []) => {
   const changeStream = client.watch(pipeline);
   //listen for changes
   changeStream.on('change', async (changeStreamObj) => {
@@ -117,7 +116,6 @@ eventRouteHelperFuncs.unsubscribe = async(redis, websocketId, websocketObj, subs
     }
     const changeStreams = await redis.smembers('DBCOL' + websocketId)
     for(const changeStream of changeStreams){
-      console.log(changeStream);
       await redis.srem(changeStream, websocketId)
     }
     redis.del('DBCOL' + websocketId);

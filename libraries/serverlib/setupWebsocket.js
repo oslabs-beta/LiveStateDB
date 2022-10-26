@@ -30,8 +30,6 @@ module.exports = async (server, changeStreamOptions) => {
         }
         try {
           const { subscriptionId, collection, database, query } = changeStreamOptions;
-          console.error('query', query);
-          console.error('changeSteamOptions', changeStreamOptions) 
           //keep track of connection/reply object by clientsubscriptionId
           if(!websocketObj[subscriptionId]) websocketObj[subscriptionId] = socket.id;
            //!! can use redis for this later
@@ -69,7 +67,6 @@ module.exports = async (server, changeStreamOptions) => {
       })  
       socket.on('depChange', async ({database, collection, query, subscriptionId}) => {
         const currChangeStreamSub = await redis.smembers('DBCOL' + socket.id);
-        console.log(currChangeStreamSub)
         if('DB' + database + 'COL' + collection != currChangeStreamSub){
           //check to make sure the current open changestream is needed
 

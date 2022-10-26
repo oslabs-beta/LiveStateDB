@@ -29,10 +29,7 @@ const Subscribe = () => {
       currSocket.current = socket;
       
       socket.on(subscriptionId, (e) => {
-        console.log(JSON.parse(e));
         const {type, data} = JSON.parse(e);
-        console.log('type', type);
-        console.log('data', data);
         const id = data.documentKey?._id;
         switch (type) {
           case 'get':
@@ -76,7 +73,6 @@ const Subscribe = () => {
                 delete updatedstate[id];
                 return updatedstate;
               });
-              console.log('Delete case fired');
               break;
             }
         }
@@ -99,7 +95,6 @@ const Subscribe = () => {
           subscriptionId: subscriptionId
         })
         //event emitter for letting the server know something has changed for subscription
-        console.log('useeffect for change in deps.')
       }else didMount.current = true;
     }, [database, collection, stringifiedQuery])
 

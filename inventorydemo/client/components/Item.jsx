@@ -6,34 +6,37 @@ const Item = (
     quantity, 
     price, 
     handleIncDecClick,
-    id 
+    id,
+    className 
   }) => {
   
   return(
-    <ul>
-      <li>
+    <div class={ className }>
+      <span class = 'values'>
         {item}
-      </li>
-      <li>
-        {description}
-      </li>
-      <li>
-        {quantity}
-      </li>
-      <li>
+      </span>
+      <span class = 'values'>
+      {description}
+      </span>
+      <span class = 'values' id='quantity'>
+      {quantity}
+      <div className='buttonContainer'>
+        {handleIncDecClick && 
+          <button className='button' onClick={() => handleIncDecClick(id, 'quantity', 1)}>
+            +
+          </button>
+        }
+        {handleIncDecClick &&
+          <button className='button' onClick={() => handleIncDecClick(id, 'quantity', -1)}>
+            -
+          </button>
+        }
+      </div>
+      </span>
+      <span class = 'values'>
         {price}
-      </li>
-      <li>
-        <button onClick={() => handleIncDecClick(id, 'quantity', 1)}>
-          Increment
-        </button>
-      </li>
-      <li>
-        <button onClick={() => handleIncDecClick(id, 'quantity', -1)}>
-          Decrement
-        </button>
-      </li>
-    </ul>
+      </span>
+    </div>
   )
 }
 

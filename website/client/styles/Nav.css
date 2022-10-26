@@ -1,0 +1,18 @@
+.Nav {
+  /* background-color: violet; */
+  width: 300px;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #2f3135;
+  transition: 50ms;
+}
+
+.nav-link:hover {
+  color: #164197;
+}

@@ -1,10 +1,11 @@
-import React from 'react'
+import React from 'react';
 import Nav from './Nav.jsx';
+import '../styles/Header.css';
 
 const Header = () => {
   return (
     <div className='Header'>
-      Header component
+      <div className='logo'>LiveStateDB image</div>
       <Nav />
     </div>
   )

@@ -1,0 +1,20 @@
+.Footer {
+  /* background-color: lightcoral; */
+  bottom: 0;
+  height: 160px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-evenly;
+  /* background-color: aliceblue; */
+  height: 160px;
+  padding-top: 10px;
+}
+
+.copyright-license {
+  text-align: center;
+}

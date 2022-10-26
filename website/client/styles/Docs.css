@@ -1,0 +1,14 @@
+.Docs {
+  display: flex;
+  height: 1200px;
+}
+
+.sidebar {
+  background-color: aqua;
+  width: 200px;
+}
+
+.documentation-content {
+  background-color: aquamarine;
+  flex: 1;
+}

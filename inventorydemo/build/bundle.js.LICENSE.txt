@@ -29,3 +29,5 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
+//! Can pass props to Display {database, collection, query}, then just pass those variables as args into useSubscribe(database, collection, query)

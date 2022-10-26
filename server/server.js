@@ -10,26 +10,19 @@ const app = express();
 
 app.use(express.json());
 
-// Log all rquests as we build
-app.use((req, res, next) => {
-  console.log(`server/app.js: received request ${req.method} ${req.url}`);
-  next();
-});
-
 // Serve the client build
-app.use('/build', express.static(path.resolve(__dirname, '../build')));
+app.use('/build', express.static(path.resolve(__dirname, '../storedemo/build')));
 
 // Handle router calls
 app.use('/inventory', inventory);
 
 // Serve index.html
 app.get('/', (req, res) => {
-  res.sendFile(path.resolve(__dirname, '../public/', 'index.html'));
+  res.sendFile(path.resolve(__dirname, '../storedemo/public/', 'index.html'));
 });
 
 // Default 404 handler
 app.use((req, res) => {
-  console.log(`server/app.js: handler not found for request ${req.method} ${req.url}`);
   res
     .status(404)
     .send(

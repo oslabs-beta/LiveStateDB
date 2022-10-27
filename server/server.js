@@ -72,7 +72,7 @@ const credentials = {
 
 const server = http.Server(app);
 const httpsServer = https.Server(credentials, app);
-server.listen(80, () => console.log('listening on port 80'));
+// server.listen(80, () => console.log('listening on port 80'));
 httpsServer.listen(443, () => console.log('listening on port 443'))
 
 const changeStreamOptions = 
@@ -89,8 +89,8 @@ const changeStreamOptions =
       },
   }
 
-require('../libraries/serverlib/setupWebsocket')(server, changeStreamOptions)
-  .catch(console.error)
+// require('../libraries/serverlib/setupWebsocket')(server, changeStreamOptions)
+//   .catch(console.error)
 
 require('../libraries/serverlib/setupWebsocket')(httpsServer, changeStreamOptions)
   .catch(console.error)

@@ -54,6 +54,16 @@ These libraries can be installed by running ```npm/yarn install @livestatedb/cli
 
 # Getting Started
 
+LiveStateDB features a client side library and a server side library that can be installed via npm or yarn with the following commands. The libraries need to be installed on both sides in order to make use of LiveStateDB's real time updates.
+
+```js
+npm install @livestatedb/client
+yarn install @livestatedb/client
+
+npm install @livestatedb/server
+yarn install @livestatedb/server
+```
+
 ## Using the hook useSubscribe( )
 
 <br>

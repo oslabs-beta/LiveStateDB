@@ -17,13 +17,13 @@ const Home = () => {
 
       <div className='tagline'>
         <div className='main-tagline'>
-          Keep state updated
+          Automatically update state based
           <br></br>
-          without querying your database.
+           on database changes.
         </div>
         <div className='sub-tagline'>
           <p>
-            LiveStateDB is a database subscription API that makes state reflect data it's subscribed to. In real time.
+            In real time. To many clients.
           </p>
         </div>
       </div>
@@ -33,20 +33,19 @@ const Home = () => {
           <div className='sub-section-heading'>Powered by change streams and sockets</div>
           <div>
             <p>
-              Maybe we want to provide a simple overview
-              of how this technology works.
+            These tools allow for an open line of communication between the database, server and clients.
             </p>
           </div>
         </div>
-        <div className='sub-section'>
+        {/* <div className='sub-section'>
           Diagram?
-        </div>
+        </div> */}
       </div>
 
       <div className='main-section-b'>
-        <div className='sub-section'>
-          Gif of demo?
-        </div>
+        {/* <div className='sub-section'>
+          <img className='gif' src="https://s4.gifyu.com/images/osp_gif_example_AdobeExpress.gif" alt="osp_gif_example_AdobeExpress.gif" border="0" width='85%' />
+        </div> */}
         <div className='sub-section'>
           <div className='sub-section-heading'>Try it out</div>
           <div>

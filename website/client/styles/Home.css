@@ -64,6 +64,28 @@
   margin-top: 20px;
 }
 
+.demo-launch-buttons {
+  /* display: flex; */
+}
+
+.demo-launch-buttons button {
+  border: none;
+  background-color: rgb(247, 247, 247);
+  color: #2f3135;
+  padding: 10px;
+  margin: 30px;
+  border-radius: 100px;
+  border: 1px solid rgba(0, 0, 0, 0);
+}
+
+.demo-launch-buttons button:hover {
+  background-color: rgb(240, 240, 240);
+}
+
+.demo-launch-buttons button:active {
+  background-color: white;
+}
+
 .get-started {
   /* background-color: lightseagreen; */
   flex: 1;

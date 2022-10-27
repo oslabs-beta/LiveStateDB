@@ -5,7 +5,9 @@ import '../styles/Header.css';
 const Header = () => {
   return (
     <div className='Header'>
-      <div className='logo'>LiveStateDB image</div>
+      <div className='logo'>
+        <img src='/website/build/assets/livestatedb.png'/>
+      </div>
       <Nav />
     </div>
   )

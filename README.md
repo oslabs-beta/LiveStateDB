@@ -61,7 +61,7 @@ npm install @livestatedb/client
 yarn install @livestatedb/client
 
 npm install @livestatedb/server
-npm install @livestatedb/server
+yarn install @livestatedb/server
 ```
 
 ## Using the hook useSubscribe( )

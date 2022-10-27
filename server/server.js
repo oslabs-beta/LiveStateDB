@@ -17,6 +17,13 @@ const corsOptions = {
 };
 const cors = require('cors')(corsOptions);
 
+app.use(function(request, response, next) {
+  if (!request.secure) {
+     return response.redirect("https://" + request.headers.host + request.url);
+  }
+  next();
+})
+
 // Serve the client build
 app.use('/website/build', express.static(path.resolve(__dirname, '../website/build')));
 app.use('/inventorydemo/build', express.static(path.resolve(__dirname, '../inventorydemo/build')));

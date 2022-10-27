@@ -3,6 +3,7 @@ const path = require('path');
 const inventory = require('./routes/inventory');
 const fs = require('fs');
 const http = require('http');
+const https = require('https');
 
 
 const PORT = process.env.EXPRESS_PORT || 3000;
@@ -58,22 +59,38 @@ app.use((err, req, res, next) => {
   res.status(errObj.status).send(errObj.message);
 });
 
+// Certificate
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/yourdomain.com/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/yourdomain.com/cert.pem', 'utf8');
+const ca = fs.readFileSync('/etc/letsencrypt/live/yourdomain.com/chain.pem', 'utf8');
+
+const credentials = {
+	key: privateKey,
+	cert: certificate,
+	ca: ca
+};
+
 const server = http.Server(app);
+const httpsServer = https.Server(app);
 server.listen(80, () => console.log('listening on port 80'));
+httpsServer.listen(443, () => console.log('listening on port 443'))
 
 const changeStreamOptions = 
   {
-    // mongoDbOptions: 
-    //   {
-    //     uri: 
-    //   },
-    // redisDbOptions: 
-    //   { host: 
-    //     port:  
-    //     password: 
-    //     family: 
-    //   },
+    mongoDbOptions: 
+      {
+        uri: "mongodb+srv://vividvoltage:coffeeCup@cluster0.ezvco0o.mongodb.net/test"
+      },
+    redisDbOptions: 
+      { host: 'redis-15711.c82.us-east-1-2.ec2.cloud.redislabs.com', 
+        port: 15711, 
+        password: 'o1dMUq5WaZLQUVvJDCcIJJEfxDCJwTAw',
+        family: 4
+      },
   }
 
 require('../libraries/serverlib/setupWebsocket')(server, changeStreamOptions)
+  .catch(console.error)
+
+require('../libraries/serverlib/setupWebsocket')(httpsServer, changeStreamOptions)
   .catch(console.error)

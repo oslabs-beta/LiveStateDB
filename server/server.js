@@ -17,11 +17,9 @@ const corsOptions = {
 };
 const cors = require('cors')(corsOptions);
 
-app.use(function(request, response, next) {
-  if (!request.secure) {
-     return response.redirect("https://" + request.headers.host + request.url);
-  }
-  next();
+app.enable('trust proxy')
+app.use((req, res, next) => {
+    req.secure ? next() : res.redirect('https://' + req.headers.host + req.url)
 })
 
 // Serve the client build
@@ -79,7 +77,7 @@ const credentials = {
 
 const server = http.Server(app);
 const httpsServer = https.Server(credentials, app);
-// server.listen(80, () => console.log('listening on port 80'));
+server.listen(80, () => console.log('listening on port 80'));
 httpsServer.listen(443, () => console.log('listening on port 443'))
 
 const changeStreamOptions = 
@@ -96,8 +94,8 @@ const changeStreamOptions =
       },
   }
 
-// require('../libraries/serverlib/setupWebsocket')(server, changeStreamOptions)
-//   .catch(console.error)
+require('../libraries/serverlib/setupWebsocket')(server, changeStreamOptions)
+  .catch(console.error)
 
 require('../libraries/serverlib/setupWebsocket')(httpsServer, changeStreamOptions)
   .catch(console.error)

@@ -6,6 +6,8 @@ const ContactCard = (props) => {
   
   const {photo, name, linkedIn, gitHub} = props.contributor;
   
+  console.log('photo', photo);
+
   return (
     <div className='ContactCard'>
       <img className='photo' src={photo}></img>

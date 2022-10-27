@@ -17,13 +17,23 @@ const corsOptions = {
 const cors = require('cors')(corsOptions);
 
 // Serve the client build
-app.use('/build', express.static(path.resolve(__dirname, '../storedemo/build')));
+app.use('/website/build', express.static(path.resolve(__dirname, '../website/build')));
+app.use('/inventorydemo/build', express.static(path.resolve(__dirname, '../inventorydemo/build')));
+app.use('/storedemo/build', express.static(path.resolve(__dirname, '../storedemo/build')));
 
 // Handle router calls
 app.use('/inventory', inventory);
 
 // Serve index.html
 app.get('/', (req, res) => {
+  res.sendFile(path.resolve(__dirname, '../website/public/', 'index.html'));
+});
+
+app.get('/inventorydemo', (req, res) => {
+  res.sendFile(path.resolve(__dirname, '../inventorydemo/public/', 'index.html'));
+});
+
+app.get('/storedemo', (req, res) => {
   res.sendFile(path.resolve(__dirname, '../storedemo/public/', 'index.html'));
 });
 
@@ -49,7 +59,7 @@ app.use((err, req, res, next) => {
 });
 
 const server = http.Server(app);
-server.listen(3000, () => console.log('listening on port 3000'));
+server.listen(80, () => console.log('listening on port 80'));
 
 const changeStreamOptions = 
   {
@@ -67,4 +77,3 @@ const changeStreamOptions =
 
 require('../libraries/serverlib/setupWebsocket')(server, changeStreamOptions)
   .catch(console.error)
-  

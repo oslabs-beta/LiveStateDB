@@ -55,8 +55,8 @@ const Home = () => {
               our npm package to get building yourself.
             </p>
           <div className='demo-launch-buttons'>
-            <button onClick={() => openInNewTab('https://google.com')}>Storefront Demo</button>
-            <button onClick={() => openInNewTab('https://google.com')}>Inventory Manager Demo</button>
+            <button onClick={() => openInNewTab('http://localhost:3000/storedemo')}>Storefront Demo</button>
+            <button onClick={() => openInNewTab('http://localhost:3000/inventorydemo')}>Inventory Manager Demo</button>
           </div>
           </div>
         </div>

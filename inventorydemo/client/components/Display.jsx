@@ -28,9 +28,9 @@ const Display = () => {
     <div>
       <div className='header'>
         <h1>
-        <img src="build/images/transparent.png" className='rickPicLeft'></img>
+        <img src="/inventorydemo/build/images/transparent.png" className='rickPicLeft'></img>
           Rick Rollin' Records
-        <img src="build/images/transparent.png" className='rickPicRight'></img>
+        <img src="/inventorydemo/build/images/transparent.png" className='rickPicRight'></img>
         </h1>
       </div>
       <div className='display'>

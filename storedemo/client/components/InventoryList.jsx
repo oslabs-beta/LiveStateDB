@@ -22,7 +22,7 @@ const InventoryList = ({ inventoryList, handleIncDecClick, pressedCart, shopping
 
   //for every item in the database we add an item component for rendering
   for(let items in inventoryList){
-    const path = 'build/images/'
+    const path = '/storedemo/build/images/'
     inventory.push(
       <Item
       key = { i }

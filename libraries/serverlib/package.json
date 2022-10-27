@@ -1,6 +1,6 @@
 {
   "name": "@livestatedb/server",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "LivestateDB API server package that will hook into an http server",
   "main": "setupWebsocket.js",
   "scripts": {

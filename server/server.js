@@ -10,6 +10,12 @@ const app = express();
 
 app.use(express.json());
 
+const corsOptions = {
+  origin: true,
+  credentials: true,
+};
+const cors = require('cors')(corsOptions);
+
 // Serve the client build
 app.use('/build', express.static(path.resolve(__dirname, '../storedemo/build')));
 

@@ -42,7 +42,6 @@
 
 LiveStateDB is a database subscription API that enables developers to make state reflect database changes in real time. Developers will have access to a custom hook, ```useSubscribe()```, to implement in your front-end codebase, and a back-end library which allows the server to interface with your database. Currently, LiveStateDB only supports MongoDB.
 
-These libraries can be installed by running ```npm/yarn install @livestatedb/client @livestatedb/server``` respectively.
 
 ### Built With
 

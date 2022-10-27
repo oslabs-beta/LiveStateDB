@@ -4,7 +4,7 @@
   "description": "A real time state management library that allows for state to subscribe and update based on changes from a specific portion of a database.",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon inventorydemo/server/server.js & NODE_ENV=development webpack serve --open",
+    "start": "nodemon server/server.js & NODE_ENV=development webpack serve --open",
     "build": "NODE_ENV=production webpack",
     "watch": "webpack --watch",
     "dev": "NODE_ENV=development webpack serve --open"
@@ -35,6 +35,7 @@
     "mongoose": "^6.4.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-icons": "^4.6.0",
     "react-redux": "^8.0.2",
     "react-uuid": "^1.0.3",
     "socket.io-client": "^4.5.3"
@@ -48,6 +49,7 @@
     "@livestatedb/server": "^1.0.1",
     "babel-jest": "^29.2.1",
     "babel-loader": "^8.2.5",
+    "cors": "^2.8.5",
     "css-loader": "^6.7.1",
     "fastify": "^4.8.1",
     "html-webpack-plugin": "^5.5.0",

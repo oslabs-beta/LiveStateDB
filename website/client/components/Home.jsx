@@ -8,7 +8,9 @@ const Home = () => {
   const contactcards = [];
   contributors.map((contributor, index) => contactcards.push(<ContactCard key={'contributor' + index} contributor={contributor} />))
 
-  console.log(contactcards);
+  const openInNewTab = url => {
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
 
   return (
     <div className='Home'>
@@ -52,6 +54,10 @@ const Home = () => {
               Explore a pre-built demo, or download
               our npm package to get building yourself.
             </p>
+          <div className='demo-launch-buttons'>
+            <button onClick={() => openInNewTab('https://google.com')}>Storefront Demo</button>
+            <button onClick={() => openInNewTab('https://google.com')}>Inventory Manager Demo</button>
+          </div>
           </div>
         </div>
       </div>

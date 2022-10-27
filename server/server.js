@@ -92,5 +92,5 @@ const changeStreamOptions =
 require('../libraries/serverlib/setupWebsocket')(server, changeStreamOptions)
   .catch(console.error)
 
-// require('../libraries/serverlib/setupWebsocket')(httpsServer, changeStreamOptions)
-//   .catch(console.error)
+require('../libraries/serverlib/setupWebsocket')(httpsServer, changeStreamOptions)
+  .catch(console.error)

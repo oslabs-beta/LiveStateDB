@@ -1,0 +1,99 @@
+/* ul > li {
+  display: inline-block;
+}
+
+li {
+  padding-left: 20px;
+} */
+
+* {
+  background-color: #f1f5f8;
+  color: #0D0D0D;
+  padding: 0px;
+  margin: 0px;
+  font-family: sans-serif;
+}
+
+h1 {
+  font-size: 8vw;
+  text-align: center;
+}
+
+h2 {
+  font-size: 5vw;
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+.rickPicRight {
+  width: 5%;
+  margin-left: 5px;
+}
+
+.rickPicLeft {
+  width: 5%;
+  margin-right: 5px;
+  transform: scaleX(-1);
+}
+
+.header {
+  margin-top: 10px;
+  display: flex;
+}
+
+.display {
+  border: solid 2px #383838;
+  margin: auto;
+  width: 90%;
+  height: 90%;
+  padding: 5px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-evenly;
+  margin-bottom: -1px;
+}
+
+.values{
+  color: #232323;
+  border: solid 1px #808080;
+  border-radius: 0px;
+  width: 100%;
+  text-align: center;
+  margin-left: -1px;
+}
+
+.label {
+  display: flex;
+  justify-content: space-evenly;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.button{
+  /* width: 35px; */
+  width: 40%;
+  height: 17px;
+  background-color: #f1f5f8;
+  margin-left: 2px;
+
+}
+
+.buttonContainer {
+  display: none;
+  position: absolute;
+  width: 5%;
+  margin-left: 8px;
+}
+
+#quantity:hover > .buttonContainer {
+  display: inline-block;
+}
+
+#quantity {
+  display: inline-block;
+}
+
+
+

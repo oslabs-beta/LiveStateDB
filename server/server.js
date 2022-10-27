@@ -71,7 +71,7 @@ const credentials = {
 };
 
 const server = http.Server(app);
-const httpsServer = https.Server(app);
+const httpsServer = https.Server(credentials, app);
 server.listen(80, () => console.log('listening on port 80'));
 httpsServer.listen(443, () => console.log('listening on port 443'))
 

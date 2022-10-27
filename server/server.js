@@ -63,16 +63,16 @@ server.listen(80, () => console.log('listening on port 80'));
 
 const changeStreamOptions = 
   {
-    mongoDbOptions: 
-      {
-        uri: "mongodb+srv://vividvoltage:coffeeCup@cluster0.ezvco0o.mongodb.net/test"
-      },
-    redisDbOptions: 
-      { host: 'redis-15711.c82.us-east-1-2.ec2.cloud.redislabs.com', 
-        port: 15711, 
-        password: 'o1dMUq5WaZLQUVvJDCcIJJEfxDCJwTAw',
-        family: 4
-      },
+    // mongoDbOptions: 
+    //   {
+    //     uri: 
+    //   },
+    // redisDbOptions: 
+    //   { host: 
+    //     port:  
+    //     password: 
+    //     family: 
+    //   },
   }
 
 require('../libraries/serverlib/setupWebsocket')(server, changeStreamOptions)

@@ -50,9 +50,9 @@ const Item = (
       <div className = 'values'>
         {description}
       </div>
-      {/* <div className = 'values' id='quantity'>
-        {quantity}
-      </div> */}
+      <div className = 'values' id='quantity'>
+        avaliable: {quantity}
+      </div>
       <div className = 'values'>
         ${price}
       </div>

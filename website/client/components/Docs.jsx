@@ -11,7 +11,7 @@ const Docs = () => {
         <h1>Documentation</h1>
         <div className='documentation-about'>
           <h2>About</h2>
-          <p>LiveStateDB is available as an <a href='https://www.npmjs.com/~livestatedb'>npm package</a>.</p>
+          <p>LiveStateDB is available as an <a href='https://www.npmjs.com/~livestatedb' target='_blank' rel='noreferrer noopener'>npm package</a>.</p>
           <p>LiveStateDB is a database subscription API that enables developers to make state reflect database changes in real time. Developers will have access to a custom hook, <code className='code'>useSubscribe&#40;&#41;</code>, to implement in your front-end codebase, and a back-end library which allows the server to interface with your database. Currently, LiveStateDB only supports MongoDB.</p>
           <p>These libraries can be installed by running <code className='code'>npm/yarn install @livestatedb/client @livestatedb/server</code> respectively.</p>
         </div>
@@ -35,7 +35,7 @@ const Docs = () => {
           <code className='code'>
             <p>const &#91; state, endSubscription &#93; = useSubscribe&#40;options&#41;</p>
           </code>
-          <p>See our <a href='https://github.com/oslabs-beta/LiveStateDB'>GitHub</a> for considerations and use case limitations.</p>
+          <p>See our <a href='https://github.com/oslabs-beta/LiveStateDB' target='_blank' rel='noreferrer noopener'>GitHub</a> for considerations and use case limitations.</p>
         </div>
 
         <div className='documentation-back-end'>
@@ -49,7 +49,7 @@ const Docs = () => {
           <code className='code'>
             <p>require&#40;'@livestatedb/server'&#41;&#40;httpServer, databaseInfo&#41;;</p>
           </code>
-          <p>The second paramater, databaseInfo, must be an object with two key-value pairs - these are for passing in information about your MongoDB database and Redis, respectively. The values are both objects that contain connection information for each database. See example below.</p>
+          <p>The second paramete, databaseInfo, must be an object with two key-value pairs - these are for passing in information about your MongoDB database and Redis, respectively. The values are both objects that contain connection information for each database. See example below.</p>
           <code className='code'>
             <p>const databaseInfo = &#123;<br></br>
     mongoDbOptions: &#123;<br></br>

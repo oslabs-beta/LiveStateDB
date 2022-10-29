@@ -58,6 +58,10 @@
   /* background-color: antiquewhite; */
 }
 
+.modal {
+  height: 200px;
+}
+
 .sub-section-heading {
   font-weight: 800;
   font-size: 36px;

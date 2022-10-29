@@ -11,9 +11,12 @@
 }
 
 .logo {
+  margin-top: 6px;
   padding: 20px;
+  height:80px;
+  width: 200px;
 }
 
 .logoImg {
-  height: 60px;
+  width:100%;
 }

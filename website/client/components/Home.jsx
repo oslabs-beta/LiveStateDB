@@ -2,6 +2,7 @@ import React from 'react';
 import '../styles/Home.css';
 import ContactCard from './ContactCard';
 import contributors from '../../contributors';
+import ModalImage from "react-modal-image";
 
 const Home = () => {
   
@@ -23,39 +24,49 @@ const Home = () => {
         </div>
         <div className='sub-tagline'>
           <p>
-            In real time. To many clients.
+            In real time. To multiple clients.
           </p>
         </div>
       </div>
 
       <div className='main-section-a'>
         <div className='sub-section'>
-          <div className='sub-section-heading'>Powered by change streams and sockets</div>
+          <div className='sub-section-heading'>Powered by MongoDB change streams and WebSockets</div>
           <div>
             <p>
-            These tools allow for an open line of communication between the database, server and clients.
+              <a href='https://medium.com/@stephaniepage/livestatedb-5244b41e7419' target='_blank' rel='noreferrer noopener'>Learn more</a> about LiveStateDB, diagrams included!
             </p>
           </div>
         </div>
-        {/* <div className='sub-section'>
-          Diagram?
-        </div> */}
+        <div className='sub-section'>
+            <ModalImage className='modal'
+              small={'website/build/assets/diagram1.png'}
+              large={'website/build/assets/diagram1.png'}
+              imageBackgroundColor={'rgb(247, 247, 247)'}
+            />
+            <ModalImage className='modal'
+              small={'website/build/assets/diagram2.png'}
+              large={'website/build/assets/diagram2.png'}
+              imageBackgroundColor={'rgb(247, 247, 247)'}
+            />
+        </div>
       </div>
 
       <div className='main-section-b'>
-        {/* <div className='sub-section'>
-          <img className='gif' src="https://s4.gifyu.com/images/osp_gif_example_AdobeExpress.gif" alt="osp_gif_example_AdobeExpress.gif" border="0" width='85%' />
-        </div> */}
         <div className='sub-section'>
           <div className='sub-section-heading'>Try it out</div>
           <div>
             <p>
-              Explore a pre-built demo, or download
-              our npm package to get building yourself.
+              Explore the pre-built demo! Open a storefront demo and multiple inventory manager demos.  Notice that as you alter the inventory in any client the quantity changes across each client.
+            </p>   
+            <p>
+              This is the power of LiveStateDB!     
             </p>
           <div className='demo-launch-buttons'>
             <button onClick={() => openInNewTab('https://livestatedb.com/storedemo')}>Storefront Demo</button>
             <button onClick={() => openInNewTab('https://livestatedb.com/inventorydemo')}>Inventory Manager Demo</button>
+            <p> Download the <a href='https://www.npmjs.com/search?q=livestatedb' target='_blank' rel='noreferrer noopener'>NPM packages</a> and try for yourself!
+            </p>  
           </div>
           </div>
         </div>

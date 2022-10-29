@@ -39,8 +39,8 @@ module.exports = {
         target: 'http://localhost:3000/',
         secure: false,
       },
-      '/inventory/**': {
-        target: 'http://localhost:3004/',
+      '/': {
+        target: 'http://localhost:80/',
         secure: false,
       }, 
       // '/event/**': {

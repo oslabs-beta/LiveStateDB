@@ -44,6 +44,7 @@
 .documentation-about, .documentation-hook, .documentation-back-end {
   word-wrap: break-word;
   min-width: 400px;
+  width: 100%;
   background-color: rgba(247, 247, 247, 0.8);
   margin: 10px 0px 10px 0px;
   padding: 10px ;

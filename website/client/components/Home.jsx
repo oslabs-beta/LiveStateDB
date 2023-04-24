@@ -63,8 +63,8 @@ const Home = () => {
               This is the power of LiveStateDB!     
             </p>
           <div className='demo-launch-buttons'>
-            <button onClick={() => openInNewTab('https://livestatedb.com/storedemo')}>Storefront Demo</button>
-            <button onClick={() => openInNewTab('https://livestatedb.com/inventorydemo')}>Inventory Manager Demo</button>
+            <button onClick={() => openInNewTab('http://livestatedb.com/storedemo')}>Storefront Demo</button>
+            <button onClick={() => openInNewTab('http://livestatedb.com/inventorydemo')}>Inventory Manager Demo</button>
             <p> Download the <a href='https://www.npmjs.com/search?q=livestatedb' target='_blank' rel='noreferrer noopener'>NPM packages</a> and try for yourself!
             </p>  
           </div>

@@ -3,7 +3,7 @@ const path = require('path');
 const inventory = require('./routes/inventory');
 const fs = require('fs');
 const http = require('http');
-const https = require('https');
+// const https = require('https');
 
 
 const PORT = process.env.EXPRESS_PORT || 3000;
@@ -17,10 +17,10 @@ const corsOptions = {
 };
 const cors = require('cors')(corsOptions);
 
-app.enable('trust proxy')
-app.use((req, res, next) => {
-    req.secure ? next() : res.redirect('https://' + req.headers.host + req.url)
-})
+// app.enable('trust proxy')
+// app.use((req, res, next) => {
+//     req.secure ? next() : res.redirect('https://' + req.headers.host + req.url)
+// })
 
 // Serve the client build
 app.use('/website/build', express.static(path.resolve(__dirname, '../website/build')));
@@ -65,20 +65,20 @@ app.use((err, req, res, next) => {
 });
 
 // Certificate
-const privateKey = fs.readFileSync('../../etc/letsencrypt/live/livestatedb.com/privkey.pem', 'utf8');
-const certificate = fs.readFileSync('../../etc/letsencrypt/live/livestatedb.com/cert.pem', 'utf8');
-const ca = fs.readFileSync('../../etc/letsencrypt/live/livestatedb.com/chain.pem', 'utf8');
+// const privateKey = fs.readFileSync('../../etc/letsencrypt/live/livestatedb.com/privkey.pem', 'utf8');
+// const certificate = fs.readFileSync('../../etc/letsencrypt/live/livestatedb.com/cert.pem', 'utf8');
+// const ca = fs.readFileSync('../../etc/letsencrypt/live/livestatedb.com/chain.pem', 'utf8');
 
-const credentials = {
-	key: privateKey,
-	cert: certificate,
-	ca: ca
-};
+// const credentials = {
+// 	key: privateKey,
+// 	cert: certificate,
+// 	ca: ca
+// };
 
 const server = http.Server(app);
-const httpsServer = https.Server(credentials, app);
+// const httpsServer = https.Server(credentials, app);
 server.listen(80, () => console.log('listening on port 80'));
-httpsServer.listen(443, () => console.log('listening on port 443'))
+// httpsServer.listen(443, () => console.log('listening on port 443'))
 
 const changeStreamOptions = 
   {
@@ -97,5 +97,5 @@ const changeStreamOptions =
 require('../libraries/serverlib/setupWebsocket')(server, changeStreamOptions)
   .catch(console.error)
 
-require('../libraries/serverlib/setupWebsocket')(httpsServer, changeStreamOptions)
-  .catch(console.error)
+// require('../libraries/serverlib/setupWebsocket')(httpsServer, changeStreamOptions)
+//   .catch(console.error)

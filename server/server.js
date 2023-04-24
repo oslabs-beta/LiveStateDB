@@ -87,9 +87,9 @@ const changeStreamOptions =
         uri: "mongodb+srv://vividvoltage:coffeeCup@cluster0.ezvco0o.mongodb.net/test"
       },
     redisDbOptions: 
-      { host: 'redis-15711.c82.us-east-1-2.ec2.cloud.redislabs.com', 
-        port: 15711, 
-        password: 'o1dMUq5WaZLQUVvJDCcIJJEfxDCJwTAw',
+      { host: 'redis-11638.c16.us-east-1-2.ec2.cloud.redislabs.com', 
+        port: 11638, 
+        password: 'kmyDkjJZ5z2MWFupR1uuCONh32wG4IlI',
         family: 4
       },
   }
